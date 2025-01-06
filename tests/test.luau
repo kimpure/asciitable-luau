@@ -8,4 +8,6 @@ local my_fruit = {
     orange = 1,
 }
 
+asciitable.round = true
+
 print(asciitable.table(my_fruit))

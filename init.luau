@@ -89,6 +89,74 @@ local tree_chars = {
     middle = '│'
 }
 
+local function arscii_change_setting(arscii: typeof(setmetatable({} :: { round: boolean }, {} :: any)))
+    if arscii.round then
+        table_chars = {
+            middleMiddle = '─',
+            rowMiddle = '┼',
+            topRight = '╮',
+            topLeft = '╭',
+            leftMiddle = '├',
+            topMiddle = '┬',
+            bottomRight = '╯',
+            bottomLeft = '╰',
+            bottomMiddle = '┴',
+            rightMiddle = '┤',
+            left = '│ ',
+            right = ' │',
+            middle = '│'
+        }
+        tree_chars = {
+            middleMiddle = '─',
+            rowMiddle = '┼',
+            topRight = '╮',
+            topLeft = '╭',
+            leftMiddle = '├',
+            topMiddle = '┬',
+            bottomRight = '╯',
+            bottomLeft = '╰',
+            bottomMiddle = '┴',
+            rightMiddle = '┤',
+            left = '│ ',
+            right = ' │',
+            middle = '│'
+        }
+        return
+    end
+
+    tree_chars = {
+        middleMiddle = '─',
+        rowMiddle = '┼',
+        topRight = '┐',
+        topLeft = '┌',
+        leftMiddle = '├',
+        topMiddle = '┬',
+        bottomRight = '┘',
+        bottomLeft = '└',
+        bottomMiddle = '┴',
+        rightMiddle = '┤',
+        left = '│ ',
+        right = ' │',
+        middle = '│'
+    }
+
+    table_chars = {
+        middleMiddle = '─',
+        rowMiddle = '┼',
+        topRight = '┐',
+        topLeft = '┌',
+        leftMiddle = '├',
+        topMiddle = '┬',
+        bottomRight = '┘',
+        bottomLeft = '└',
+        bottomMiddle = '┴',
+        rightMiddle = '┤',
+        left = '│ ',
+        right = ' │',
+        middle = '│'
+    } 
+end
+
 local table_main_index = "(index)"
 local table_main_value = "Values"
 
@@ -245,9 +313,22 @@ local function arscii_tree(top: any, child: { [any]: any }): string
     return result
 end
 
+local arscii_struct = {}
+arscii_struct.round = false
 
+local arscii_impl = {}
+arscii_impl.__index = arscii_impl
+arscii_impl.tree = arscii_tree
 
-return {
-    table = arscii_table,
-    tree = arscii_tree,
-}
+local arscii = setmetatable(arscii_struct, arscii_impl)
+
+arscii.table = function(value: { [any]: any }) 
+    arscii_change_setting(arscii)
+    return arscii_table(value)
+end
+arscii.tree = function(top: any, child: { [any]: any }) 
+    arscii_change_setting(arscii)
+    return arscii_tree(top, child)
+end
+
+return arscii
