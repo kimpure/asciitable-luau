@@ -160,7 +160,15 @@ local function arscii_table(value: { [any]: any }): string
                 continue
             end
             if k == j then
+                if utf8.len(v) < utf8.len(k) then
+                    result ..= v .. string_prototype_repeat(' ', utf8.len(k) :: number - utf8.len(v) :: number + 1) .. table_chars.left
+                    continue
+                end
                 result ..= v .. ' ' .. table_chars.left
+                continue
+            end
+            if utf8.len(v) < utf8.len(k) then
+                result ..= v .. string_prototype_repeat(' ', utf8.len(k) :: number - utf8.len(v) :: number + 1) .. table_chars.left
                 continue
             end
             result ..= string_prototype_repeat(' ', utf8.len(v) :: number + 1) .. table_chars.left
@@ -173,6 +181,10 @@ local function arscii_table(value: { [any]: any }): string
     result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(table_main_index) :: number + 2) .. table_chars.bottomMiddle
     
     for k, v in index do
+        if utf8.len(v) < utf8.len(k) then
+            result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(k) :: number + 2) .. table_chars.bottomMiddle
+            continue
+        end
         result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(v) :: number + 2) .. table_chars.bottomMiddle
     end
 
