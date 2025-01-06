@@ -236,7 +236,7 @@ local function arscii_table(value: { [any]: any }): string
                 continue
             end
             if utf8.len(v) < utf8.len(k) then
-                result ..= v .. string_prototype_repeat(' ', utf8.len(k) :: number - utf8.len(v) :: number + 1) .. table_chars.left
+                result ..= string_prototype_repeat(' ', utf8.len(k) :: number - utf8.len(v) :: number + 2) .. table_chars.left
                 continue
             end
             result ..= string_prototype_repeat(' ', utf8.len(v) :: number + 1) .. table_chars.left

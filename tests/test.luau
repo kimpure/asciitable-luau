@@ -11,3 +11,4 @@ local my_fruit = {
 asciitable.round = true
 
 print(asciitable.table(my_fruit))
+print(asciitable.tree('orange', my_fruit))
