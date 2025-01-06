@@ -200,21 +200,21 @@ local function arscii_table(value: { [any]: any }): string
         result ..= ' ' .. k .. string_prototype_repeat(' ', utf8.len(v) :: number - 1) .. table_chars.right
     end
 
-    result ..= ' ' .. table_main_value .. table_chars.right .. '\n' .. table_chars.leftMiddle
-
-    result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(table_main_index) :: number + 2) .. table_chars.rowMiddle
-
-    for k, v in index do
-        if utf8.len(v) < utf8.len(k) then
-            result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(k) :: number + 2) .. table_chars.rowMiddle
-            continue
-        end
-        result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(v) :: number + 2) .. table_chars.rowMiddle
-    end
-
-    result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(table_main_value) :: number + 2) .. table_chars.rightMiddle .. '\n'
-
+    
+    result ..= ' ' .. table_main_value .. table_chars.right .. '\n' 
+    
+    
     for j, _ in value do
+        result ..= table_chars.leftMiddle .. string_prototype_repeat(table_chars.middleMiddle, utf8.len(table_main_index) :: number + 2) .. table_chars.rowMiddle
+        for k, v in index do
+            if utf8.len(v) < utf8.len(k) then
+                result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(k) :: number + 2) .. table_chars.rowMiddle
+                continue
+            end
+            result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(v) :: number + 2) .. table_chars.rowMiddle
+        end
+    
+        result ..= string_prototype_repeat(table_chars.middleMiddle, utf8.len(table_main_value) :: number + 2) .. table_chars.rightMiddle .. '\n'
         result ..= table_chars.left .. `{j}` .. string_prototype_repeat(' ', utf8.len(table_main_index) :: number - (utf8.len(j :: any) :: number - 1)) .. table_chars.left
         local is_values = ''
         for k, _ in value do
