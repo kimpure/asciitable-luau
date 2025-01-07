@@ -68,7 +68,7 @@ local function format_print_value(value: any): string
     return tostring(value)
 end    
 
-local function get_argumend_codepoint_order(tab: { [number]: any })
+local function get_argument_codepoint_order(tab: { [number]: any })
     table.sort(tab, function(a, b)
         if typeof(a) == "number" and typeof(b) == "number" then
             return a < b
@@ -96,7 +96,7 @@ end
 
 return {
     format_print_value=format_print_value,
-    get_argumend_codepoint_order=get_argumend_codepoint_order,
+    get_argument_codepoint_order=get_argument_codepoint_order,
     get_object_or_array_len=get_object_or_array_len,
     get_vk_max_len=get_vk_max_len,
     string_prototype_repeat=string_prototype_repeat,

@@ -1,7 +1,7 @@
 local method = require('./method')
 
 local format_print_value = method.format_print_value
-local get_argumend_codepoint_order = method.get_argumend_codepoint_order
+local get_argument_codepoint_order = method.get_argument_codepoint_order
 local get_object_or_array_len = method.get_object_or_array_len
 local get_vk_max_len = method.get_vk_max_len
 local string_prototype_repeat = method.string_prototype_repeat
@@ -58,14 +58,14 @@ local function arscii_table(value: { [any]: any }): string
         index_key[#index_key + 1] = k
     end
 
-    value_key = get_argumend_codepoint_order(value_key)
+    value_key = get_argument_codepoint_order(value_key)
 
-    index_key = get_argumend_codepoint_order(index_key)
+    index_key = get_argument_codepoint_order(index_key)
     for i=1, #index_key do
         index_value[i] = format_print_value(value[index_key[i]])
     end
     
-    values_key = get_argumend_codepoint_order(values_key)
+    values_key = get_argument_codepoint_order(values_key)
     for i=1, #values_key do
         values_value[i] = format_print_value(value[values_key[i]])
     end
@@ -208,13 +208,27 @@ local function arscii_tree(top: any, child: { [any]: any }): string
     local defultHightMiddle = tree_chars.middle
     local defultWightMiddle = tree_chars.middleMiddle
     
-    local function childResult(argument: { [any]: any }, voidSize: number)
+    local function child_result(argument: { [any]: any }, voidSize: number)
         local childMaxLoopCound = get_object_or_array_len(argument)
         local childCount = 0 
+
+        local ak = {}
+        local avalue = {}
+
         for k, v in argument do
-            if typeof(k) ~= 'string' then 
-                k = tostring(k) 
-            end
+            ak[#ak + 1] = k
+        end
+
+        ak = get_argument_codepoint_order(ak)
+
+        for k, v in ak do
+            avalue[k] = argument[v]
+        end
+
+        for i=1, #ak do
+            local k = ak[i]
+            local v = avalue[i]
+            k = tostring(k)
             childCount += 1
             
             local hightMiddle = tree_chars.leftMiddle
@@ -232,15 +246,15 @@ local function arscii_tree(top: any, child: { [any]: any }): string
             if argumentIsTable then
                 if childCount == childMaxLoopCound then
                     defultMiddleVoidSize = '   '
-                    childResult(v, voidSize)
+                    child_result(v, voidSize)
                 else
-                    childResult(v, voidSize+1)
+                    child_result(v, voidSize+1)
                 end
             else
                 if typeof(v) == 'table' then
                     result ..= `: {v.TREE_INSTANCE}`
                     v.TREE_INSTANCE = nil
-                    childResult(v, voidSize+1)
+                    child_result(v, voidSize+1)
                 else
                     result ..= `: {v}`
                 end    
@@ -248,7 +262,7 @@ local function arscii_tree(top: any, child: { [any]: any }): string
         end
     end
     
-    childResult(child :: any, 0)
+    child_result(child :: any, 0)
 
     return result
 end
