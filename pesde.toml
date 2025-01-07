@@ -1,0 +1,15 @@
+name = "kimpure/asciitable"
+version = "0.1.0"
+description = "using luau console table && tree"
+authors = ["kimpure (sunwoo)"]
+repository = "https://github.com/kimpure/asciitable-luau"
+license = "MIT"
+includes = ["src", "readme.md", "licence.md", "pesde.toml"]
+
+[target]
+environment = "luau"
+lib = "src/init.luau"
+build_files = ["src"]
+
+[indices]
+default = "https://github.com/pesde-pkg/index"
