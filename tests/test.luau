@@ -1,4 +1,3 @@
---!strict
 local asciitable = require('../src')
 
 local my_favorite_fruit = {
@@ -16,6 +15,7 @@ local my_favorite = {
     fruit = my_favorite_fruit,
     virtuber = my_favorite_virtuber,
     'sunwoo',
+    'kimpure',
 }
 
 asciitable.round = true
