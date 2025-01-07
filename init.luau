@@ -326,6 +326,7 @@ arscii.table = function(value: { [any]: any })
     arscii_change_setting(arscii)
     return arscii_table(value)
 end
+
 arscii.tree = function(top: any, child: { [any]: any }) 
     arscii_change_setting(arscii)
     return arscii_tree(top, child)
