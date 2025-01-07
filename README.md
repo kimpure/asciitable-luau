@@ -1,5 +1,5 @@
 # AsciiTable
-<img src="image/round.png">
+<img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/round.png">
 
 
 ## install
