@@ -1,3 +1,9 @@
+local green_tea = require('../lune_packages/greentea')
+
+local table_type = green_tea.build(green_tea.table{
+    [green_tea.any()] = green_tea.any()
+})
+
 local method = require('./method')
 
 local format_print_value = method.format_print_value
@@ -32,10 +38,8 @@ local function arscii_change_setting(arscii: arscii)
     tree_chars = config.tree_chars
 end
 
-local function arscii_table(value: { [any]: any }): string
-    if typeof(value) ~= 'table' then
-        return tostring(value)
-    end
+local function arscii_table(value: typeof(table_type:type())): string
+    table_type:assert(value)
 
     local result = ''
 
@@ -201,7 +205,9 @@ local function arscii_table(value: { [any]: any }): string
     return result
 end
 
-local function arscii_tree(top: any, children: { [any]: any }): string
+local function arscii_tree(top: any, children: typeof(table_type:type())): string
+    table_type:assert(children)
+    
     local result = tostring(top)
 
     local function add_tree(loop_num: number, children, last_child)

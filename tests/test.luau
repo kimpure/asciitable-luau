@@ -25,16 +25,15 @@ local my_favorite = {
 
 asciitable.round = true
 
--- print(asciitable.table(my_favorite))
--- print(asciitable.tree('sunwoo', my_favorite))
-print(asciitable.tree('a', {
-    ["/"] = {
-        dir1 = { },
-        dir2 = { },
-        ["file0.txt"] = {
-            attributes = 2175008768,
-            content = "File at the root.\n",
-            size = 18,
-        },
-    },
-}))
+print(asciitable.table(my_favorite))
+-- print(asciitable.tree('a', {
+--     ["/"] = {
+--         dir1 = { },
+--         dir2 = { },
+--         ["file0.txt"] = {
+--             attributes = 2175008768,
+--             content = "File at the root.\n this is test only",
+--             size = 18,
+--         },
+--     },
+-- }))

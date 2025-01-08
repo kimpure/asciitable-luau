@@ -1,5 +1,5 @@
 name = "kimpure/asciitable"
-version = "0.1.4"
+version = "0.1.5"
 description = "using luau console table && tree"
 authors = ["kimpure (sunwoo)"]
 repository = "https://github.com/kimpure/asciitable-luau"
@@ -13,3 +13,6 @@ build_files = ["src"]
 
 [indices]
 default = "https://github.com/pesde-pkg/index"
+
+[dependencies]
+greentea = { name = "corecii/greentea", version = "^0.4.11", target = "lune" }
