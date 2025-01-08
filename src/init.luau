@@ -21,13 +21,15 @@ local tree_chars = config.tree_chars
 local table_main_index = config.table_main_index
 local table_main_value = config.table_main_value
 
-export type arscii = typeof(setmetatable({} :: {
+export type TableType = typeof(table_type:type())
+
+export type Arscii = typeof(setmetatable({} :: {
     round: boolean,
-    tree: (top: string, child: { [any]: any }) -> (string),
-    table: (value: { [any]: any }) -> (string),
+    tree: (top: any, child: TableType) -> (string),
+    table: (value: TableType) -> (string),
 }, {}))
 
-local function arscii_change_setting(arscii: arscii)
+local function arscii_change_setting(arscii: Arscii)
     if arscii.round then
         table_chars = config.table_round_chars
         tree_chars = config.tree_round_chars
@@ -38,7 +40,7 @@ local function arscii_change_setting(arscii: arscii)
     tree_chars = config.tree_chars
 end
 
-local function arscii_table(value: typeof(table_type:type())): string
+local function arscii_table(value: TableType): string
     table_type:assert(value)
 
     local result = ''
@@ -205,7 +207,7 @@ local function arscii_table(value: typeof(table_type:type())): string
     return result
 end
 
-local function arscii_tree(top: any, children: typeof(table_type:type())): string
+local function arscii_tree(top: any, children: TableType): string
     table_type:assert(children)
     
     local result = tostring(top)
@@ -281,14 +283,14 @@ arscii_impl.__index = arscii_impl
 
 local arscii = setmetatable(arscii_struct, arscii_impl)
 
-function arscii.table(value: { [any]: any }) 
+function arscii.table(value) 
     arscii_change_setting(arscii)
     return arscii_table(value)
 end
 
-function arscii.tree(top: any, child: { [any]: any }) 
+function arscii.tree(top, child) 
     arscii_change_setting(arscii)
     return arscii_tree(top, child)
 end
 
-return arscii :: arscii
+return arscii :: Arscii
