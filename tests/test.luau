@@ -7,8 +7,8 @@ local my_favorite_fruit = {
 }
 
 local my_favorite_virtuber = {
-    "VIichan",
-    "MaWang0216",
+    viichan = "VIichan",
+    mawang = "MaWang0216",
 }
 
 local my_favorite = {
@@ -16,9 +16,25 @@ local my_favorite = {
     virtuber = my_favorite_virtuber,
     'sunwoo',
     'kimpure',
+    name = {
+        main = 'sunwoo',
+        github = 'kimpure'
+    },
+    test = {},
 }
 
 asciitable.round = true
 
-print(asciitable.table(my_favorite))
-print(asciitable.tree('sunwoo', my_favorite))
+-- print(asciitable.table(my_favorite))
+-- print(asciitable.tree('sunwoo', my_favorite))
+print(asciitable.tree('a', {
+    ["/"] = {
+        dir1 = { },
+        dir2 = { },
+        ["file0.txt"] = {
+            attributes = 2175008768,
+            content = "File at the root.\n",
+            size = 18,
+        },
+    },
+}))

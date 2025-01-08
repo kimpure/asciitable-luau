@@ -63,6 +63,12 @@ local function format_print_value(value: any): string
         return table_to_string(value)
     end
     if value_type == 'string' then
+        if (value::string):find('\n') then
+            if value:sub(-1) == "\n" then
+                value = value:sub(1, #value - 2)
+            end
+            return `[[{value}]]`
+        end
         return `'{value}'`
     end
     return tostring(value)

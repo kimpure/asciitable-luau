@@ -3,7 +3,7 @@ return {
         middleMiddle = '─',
         rowMiddle = '┼',
         topRight = '┐',
-        topLeft = '┌',
+        topLeft = '┌',  
         leftMiddle = '├',
         topMiddle = '┬',
         bottomRight = '┘',

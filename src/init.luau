@@ -201,68 +201,68 @@ local function arscii_table(value: { [any]: any }): string
     return result
 end
 
-local function arscii_tree(top: any, child: { [any]: any }): string
+local function arscii_tree(top: any, children: { [any]: any }): string
     local result = tostring(top)
-    local voidDefultSize = ' '
-    local defultMiddleVoidSize = ' '
-    local defultHightMiddle = tree_chars.middle
-    local defultWightMiddle = tree_chars.middleMiddle
-    
-    local function child_result(argument: { [any]: any }, voidSize: number)
-        local childMaxLoopCound = get_object_or_array_len(argument)
-        local childCount = 0 
 
-        local ak = {}
-        local avalue = {}
+    local function add_tree(loop_num: number, children, last_child)
+        local children_key = {}
+        local children_value = {}
 
-        for k, v in argument do
-            ak[#ak + 1] = k
+        for k, v in children do
+            if typeof(k) == 'number' then
+                continue
+            end
+            children_key[#children_key + 1] = k
         end
 
-        ak = get_argument_codepoint_order(ak)
-
-        for k, v in ak do
-            avalue[k] = argument[v]
+        children_key = get_argument_codepoint_order(children_key)
+        
+        for i=1, #children_key do
+            children_value[i] = children[children_key[i]]
         end
+        
+        for i=1, #children_key do
+            result ..= '\n'
 
-        for i=1, #ak do
-            local k = ak[i]
-            local v = avalue[i]
-            k = tostring(k)
-            childCount += 1
-            
-            local hightMiddle = tree_chars.leftMiddle
-            local argumentIsTable = typeof(v) == 'table' and not v.TREE_INSTANCE
-            local widthMiddle = if argumentIsTable then tree_chars.topMiddle else defultWightMiddle
-            
-            if childCount == childMaxLoopCound then 
-                hightMiddle = tree_chars.bottomLeft 
-            end
-            if argumentIsTable and get_object_or_array_len(v) == 0 then 
-                widthMiddle = defultWightMiddle 
-            end
-            
-            result ..= `\n{defultMiddleVoidSize}{string_prototype_repeat(`{defultHightMiddle}{voidDefultSize}`, voidSize)}{hightMiddle}{defultWightMiddle}{widthMiddle} {k}`
-            if argumentIsTable then
-                if childCount == childMaxLoopCound then
-                    defultMiddleVoidSize = '   '
-                    child_result(v, voidSize)
-                else
-                    child_result(v, voidSize+1)
-                end
+            if last_child then
+                result ..= string_prototype_repeat(' ', loop_num)
             else
-                if typeof(v) == 'table' then
-                    result ..= `: {v.TREE_INSTANCE}`
-                    v.TREE_INSTANCE = nil
-                    child_result(v, voidSize+1)
-                else
-                    result ..= `: {v}`
-                end    
+                result ..= string_prototype_repeat(tree_chars.middle, loop_num)
             end
+
+            if #children_key == i then
+                result ..= tree_chars.bottomLeft
+            else
+                result ..= tree_chars.leftMiddle
+            end
+
+            local child = children_value[i]
+
+            if typeof(child) ~= 'table' then
+                result ..= tree_chars.middleMiddle
+
+                result ..= ` {children_key[i]}: {format_print_value(child)}`
+
+                continue
+            end
+
+            if get_object_or_array_len(child) == 0 then
+                result ..= tree_chars.middleMiddle
+
+                result ..= ` {children_key[i]}`
+                
+                continue
+            end 
+
+            result ..= tree_chars.topMiddle
+
+            result ..= ` {children_key[i]}`
+
+            add_tree(loop_num + 1, child, #children_key == i)
         end
     end
-    
-    child_result(child :: any, 0)
+
+    add_tree(0, children, false)
 
     return result
 end
