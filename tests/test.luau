@@ -23,7 +23,17 @@ local my_favorite = {
     test = {},
 }
 
-asciitable.round = true
+asciitable.round = false
+asciitable.mergeIndexLabels = false
 
-print(asciitable.table(my_favorite))
-print(asciitable.tree('sunwoo', my_favorite))
+-- print(asciitable.table(my_favorite))
+-- print(asciitable.tree('sunwoo', my_favorite))
+
+print(asciitable.table{
+    apple = 'apple',
+    tree = {
+        'banana',
+        'appleddddddd',
+        { 'a', 'b' },
+    } :: { [any]: any }
+})

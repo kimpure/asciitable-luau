@@ -16,6 +16,16 @@ local function string_prototype_repeat(str: string, num: number)
     return result
 end
 
+local function is_array(arr: { [any]: any })
+    for k, v in arr do
+        if typeof(k) == 'number' then
+            continue
+        end
+        return false
+    end
+    return true
+end
+
 local function table_to_string(tab: { [any]: any }): string
     local function format_print_value(value: any)
         local value_type = typeof(value)
@@ -33,6 +43,10 @@ local function table_to_string(tab: { [any]: any }): string
     local rep = 0
     local len = get_object_or_array_len(tab)
 
+    if is_array(tab) then
+        return "[Array]"
+    end
+
     for k, v in tab do
         rep = rep + 1
         local pt = if len == rep then '' else ', '
@@ -47,11 +61,17 @@ local function table_to_string(tab: { [any]: any }): string
             continue
         end
 
-        if typeof(k) ~= 'number' then
+        if not is_array(v) then
             res ..= `[{format_print_value(k)}] = {table_to_string(v)}{pt}`
             continue
         end
-        res ..= `{table_to_string(v)}{pt}`
+
+        if typeof(k) ~= 'number' then
+            res ..= `[{format_print_value(k)}] = [Array]{pt}`
+            continue
+        end
+
+        res ..= `[Array]{pt}`
     end
 
     return res ..' }'
