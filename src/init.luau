@@ -56,7 +56,7 @@ local function arscii_table(value: TableType, arscii: Arscii): string
 
     for k, v in value do
         value_key[#value_key + 1] = k
-        if typeof(k) == 'number' and typeof(v) ~= 'table' then
+        if typeof(v) ~= 'table' then
             values_value[#values_value + 1] = format_print_value(v)
             values_key[#values_key + 1] = k
             continue
@@ -80,6 +80,8 @@ local function arscii_table(value: TableType, arscii: Arscii): string
     local index_max_len = get_vk_max_len(table_main_index, index_key)
 
     local values_max_len = get_vk_max_len(table_main_value, values_value)
+
+    local use_values
 
     result ..= table_chars.topLeft
 
@@ -223,7 +225,7 @@ local function arscii_table(value: TableType, arscii: Arscii): string
     
         result ..= string_prototype_repeat(table_chars.middleMiddle, max_len + 2)
     end
-    
+
     result ..= table_chars.bottomMiddle
     
     result ..= string_prototype_repeat(table_chars.middleMiddle, values_max_len + 2)
