@@ -1,6 +1,6 @@
 local green_tea = require('../lune_packages/greentea')
 
-local table_type = green_tea.build(green_tea.table{
+local table_type = green_tea.build(green_tea.table{ 
     [green_tea.any()] = green_tea.any()
 })
 
@@ -25,6 +25,7 @@ export type TableType = typeof(table_type:type())
 
 export type Arscii = typeof(setmetatable({} :: {
     round: boolean,
+    mergeIndexLabels: boolean,
     tree: (top: any, child: TableType) -> (string),
     table: (value: TableType) -> (string),
 }, {}))
@@ -40,7 +41,7 @@ local function arscii_change_setting(arscii: Arscii)
     tree_chars = config.tree_chars
 end
 
-local function arscii_table(value: TableType): string
+local function arscii_table(value: TableType, arscii: Arscii): string
     table_type:assert(value)
 
     local result = ''
@@ -129,28 +130,53 @@ local function arscii_table(value: TableType): string
     result ..= '\n'
 
     for j=1, #value_key do
-        result ..= table_chars.middle
+        if arscii.mergeIndexLabels then
+            result ..= table_chars.leftMiddle
 
-        result ..= string_prototype_repeat(table_chars.middleMiddle, index_max_len + 2)
-    
-        for i=1, #index_key do
-            local max_len = utf8_len(tostring(index_key[i]))
-            if utf8_len(index_value[i]) > max_len then
-                max_len = utf8_len(index_value[i])
+            result ..= string_prototype_repeat(table_chars.middleMiddle, index_max_len + 2)
+        
+            for i=1, #index_key do
+                local max_len = utf8_len(tostring(index_key[i]))
+                if utf8_len(index_value[i]) > max_len then
+                    max_len = utf8_len(index_value[i])
+                end
+        
+                result ..= table_chars.rowMiddle
+        
+                result ..= string_prototype_repeat(table_chars.middleMiddle, max_len + 2)
             end
-    
+        
             result ..= table_chars.rowMiddle
-    
-            result ..= string_prototype_repeat(table_chars.middleMiddle, max_len + 2)
+        
+            result ..= string_prototype_repeat(table_chars.middleMiddle, values_max_len + 2)
+        
+            result ..= table_chars.rightMiddle
+        
+            result ..= '\n'
+        elseif j == 1 then
+            result ..= table_chars.leftMiddle
+
+            result ..= string_prototype_repeat(table_chars.middleMiddle, index_max_len + 2)
+        
+            for i=1, #index_key do
+                local max_len = utf8_len(tostring(index_key[i]))
+                if utf8_len(index_value[i]) > max_len then
+                    max_len = utf8_len(index_value[i])
+                end
+        
+                result ..= table_chars.rowMiddle
+        
+                result ..= string_prototype_repeat(table_chars.middleMiddle, max_len + 2)
+            end
+        
+            result ..= table_chars.rowMiddle
+        
+            result ..= string_prototype_repeat(table_chars.middleMiddle, values_max_len + 2)
+        
+            result ..= table_chars.rightMiddle
+        
+            result ..= '\n'
         end
-    
-        result ..= table_chars.rowMiddle
-    
-        result ..= string_prototype_repeat(table_chars.middleMiddle, values_max_len + 2)
-    
-        result ..= table_chars.rightMiddle
-    
-        result ..= '\n'
 
         result ..= table_chars.middle
 
@@ -207,7 +233,7 @@ local function arscii_table(value: TableType): string
     return result
 end
 
-local function arscii_tree(top: any, children: TableType): string
+local function arscii_tree(top: any, children: TableType, arscii: Arscii): string
     table_type:assert(children)
     
     local result = tostring(top)
@@ -277,6 +303,7 @@ end
 
 local arscii_struct = {}
 arscii_struct.round = false
+arscii_struct.mergeIndexLabels = false
 
 local arscii_impl = {}
 arscii_impl.__index = arscii_impl
@@ -285,12 +312,12 @@ local arscii = setmetatable(arscii_struct, arscii_impl)
 
 function arscii.table(value) 
     arscii_change_setting(arscii)
-    return arscii_table(value)
+    return arscii_table(value, arscii)
 end
 
 function arscii.tree(top, child) 
     arscii_change_setting(arscii)
-    return arscii_tree(top, child)
+    return arscii_tree(top, child, arscii)
 end
 
 return arscii :: Arscii
