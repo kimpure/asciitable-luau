@@ -8,6 +8,16 @@ local function get_object_or_array_len(arrOrObj)
     return result
 end
 
+local function get_objectlen(arrOrObj)
+    local result = 0
+    for k, v in arrOrObj do
+        if typeof(v) ~= 'number' then
+            result += 1
+        end
+    end
+    return result
+end
+
 local function string_prototype_repeat(str: string, num: number)
     local result = ''
     for i=1, num do
@@ -143,6 +153,7 @@ return {
     format_print_value=format_print_value,
     get_argument_codepoint_order=get_argument_codepoint_order,
     get_object_or_array_len=get_object_or_array_len,
+    get_objectlen = get_objectlen,
     get_string_with_space=get_string_with_space,
     get_max_len=get_max_len,
     string_prototype_repeat=string_prototype_repeat,

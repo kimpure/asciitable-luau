@@ -8,7 +8,7 @@ local method = require("./method")
 
 local format_print_value = method.format_print_value
 local get_argument_codepoint_order = method.get_argument_codepoint_order
-local get_object_or_array_len = method.get_object_or_array_len
+local get_objectlen = method.get_objectlen
 local get_string_with_space = method.get_string_with_space
 local get_max_len = method.get_max_len
 local string_prototype_repeat = method.string_prototype_repeat
@@ -248,7 +248,7 @@ local function arscii_tree(top: any, children: TableType, arscii: Arscii): strin
 				continue
 			end
 
-			if get_object_or_array_len(child) == 0 then
+			if get_objectlen(child) == 0 then
 				result ..= tree_chars.middleMiddle
 
 				result ..= ` {children_key[i]}`

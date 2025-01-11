@@ -4,10 +4,14 @@ local asciitable = require('../src')
 
 -- asciitable.round = true
 
-print(asciitable.table{
+local test_table = {
     apple = 'apple',
     banana = {
-        'yello',
-        'green',
+        yello = 'yello',
+        green = 'green',
     },
-})
+}
+
+print(asciitable.table(test_table))
+
+print(asciitable.tree('sunwoo', test_table))
