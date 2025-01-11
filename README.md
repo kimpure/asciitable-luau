@@ -29,4 +29,9 @@ round
 asciitable.round = true
 ```
 
+mergeIndexLabels
+```luau
+asciitable.mergeIndexLabels = false
+```
+
 

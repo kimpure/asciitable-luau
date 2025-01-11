@@ -110,9 +110,28 @@ local function get_argument_codepoint_order(tab: { [number]: any })
     return tab
 end
 
-local function get_vk_max_len(key: string, argumend): number
-    local max_len = utf8_len(key)
-    for _, v in argumend do
+local function get_string_with_space(str: string, space: number)
+    space = space - utf8_len(str)
+
+    if space % 2 == 1 then
+        space -= 1
+        return `{string_prototype_repeat(' ', space / 2)}{str}{string_prototype_repeat(' ', space / 2)} `
+    end
+
+    return `{string_prototype_repeat(' ', space / 2)}{str}{string_prototype_repeat(' ', space / 2)}`
+end
+
+local function object_to_key_array(obj: { [any]: any }): { [number]: any }
+    local res = {}
+    for k, v in obj do
+        res[#res + 1] = k
+    end
+    return res
+end
+
+local function get_max_len(base_str: string, tab: { [any]: any })
+    local max_len = utf8_len(base_str)
+    for k, v in tab do
         if max_len < utf8_len(v) then
             max_len = utf8_len(v)
         end
@@ -124,7 +143,9 @@ return {
     format_print_value=format_print_value,
     get_argument_codepoint_order=get_argument_codepoint_order,
     get_object_or_array_len=get_object_or_array_len,
-    get_vk_max_len=get_vk_max_len,
+    get_string_with_space=get_string_with_space,
+    get_max_len=get_max_len,
     string_prototype_repeat=string_prototype_repeat,
+    object_to_key_array=object_to_key_array,
     table_to_string=table_to_string,
 }
