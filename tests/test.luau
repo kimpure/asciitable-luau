@@ -1,6 +1,6 @@
 local asciitable = require('../src')
 
--- asciitable.mergeIndexLabels = true
+asciitable.mergeIndexLabels = true
 
 -- asciitable.round = true
 
