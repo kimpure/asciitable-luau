@@ -1,5 +1,5 @@
 name = "kimpure/asciitable"
-version = "0.1.6"
+version = "0.2.0"
 description = "using luau console table && tree"
 authors = ["kimpure (sunwoo)"]
 repository = "https://github.com/kimpure/asciitable-luau"
