@@ -19,15 +19,14 @@ local config = require("./config")
 local table_chars = config.table_chars
 local tree_chars = config.tree_chars
 
-local table_main_index = config.table_main_index
-local table_main_value = config.table_main_value
-
 export type TableType = typeof(table_type:type())
 
 export type Arscii = typeof(setmetatable(
 	{} :: {
 		round: boolean,
 		mergeIndexLabels: boolean,
+		table_main_index: string,
+		table_main_value: string,
 		tree: (top: any, child: TableType) -> string,
 		table: (value: TableType) -> string,
 	},
@@ -47,6 +46,9 @@ end
 
 local function arscii_table(value: TableType, arscii: Arscii): string
 	table_type:assert(value)
+
+	local table_main_index = arscii.table_main_index
+	local table_main_value = arscii.table_main_value
 
 	local result = ""
 
@@ -169,9 +171,9 @@ local function arscii_table(value: TableType, arscii: Arscii): string
 		result ..= table_chars.middle
 
 		if values_value[value_key[i]] then
-			result ..= `{get_string_with_space(values_value[value_key[i]], get_max_len(index_key[i], values_value) + 2)}`
+			result ..= `{get_string_with_space(values_value[value_key[i]], get_max_len(table_main_value, values_value) + 2)}`
 		else
-			result ..= `{string_prototype_repeat(" ", get_max_len(index_key[i], values_value) + 2)}`
+			result ..= `{string_prototype_repeat(" ", get_max_len(table_main_value, values_value) + 2)}`
 		end
 
 		result ..= table_chars.middle
@@ -272,6 +274,8 @@ end
 local arscii_struct = {}
 arscii_struct.round = false
 arscii_struct.mergeIndexLabels = false
+arscii_struct.table_main_index = "(index)"
+arscii_struct.table_main_value = "Values"
 
 local arscii_impl = {}
 arscii_impl.__index = arscii_impl

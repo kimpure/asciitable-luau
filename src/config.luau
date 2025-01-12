@@ -62,7 +62,4 @@ return {
         right = ' │',
         middle = '│'
     },
-
-    table_main_index = "(index)",
-    table_main_value = "Values",
 }

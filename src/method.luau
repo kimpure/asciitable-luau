@@ -153,7 +153,7 @@ return {
     format_print_value=format_print_value,
     get_argument_codepoint_order=get_argument_codepoint_order,
     get_object_or_array_len=get_object_or_array_len,
-    get_objectlen = get_objectlen,
+    get_objectlen=get_objectlen,
     get_string_with_space=get_string_with_space,
     get_max_len=get_max_len,
     string_prototype_repeat=string_prototype_repeat,
