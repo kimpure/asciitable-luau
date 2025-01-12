@@ -11,11 +11,11 @@ asciitable.table_main_value = 'main values'
 local test_table = {
     apple = 'apple',
     banana = {
-        yello = 'yello',
-        green = 'green',
+        'yello',
+        'green',
     },
 }
 
-print(asciitable.table(test_table))
+-- print(asciitable.table(test_table))
 
 print(asciitable.tree('sunwoo', test_table))

@@ -8,16 +8,6 @@ local function get_object_or_array_len(arrOrObj)
     return result
 end
 
-local function get_objectlen(arrOrObj)
-    local result = 0
-    for k, v in arrOrObj do
-        if typeof(v) ~= 'number' then
-            result += 1
-        end
-    end
-    return result
-end
-
 local function string_prototype_repeat(str: string, num: number)
     local result = ''
     for i=1, num do
@@ -149,14 +139,34 @@ local function get_max_len(base_str: string, tab: { [any]: any })
     return max_len
 end
 
+local function mix_table_to_object<T>(mix_t: { [any]: T }): { [string]: T }
+    for k, v in mix_t do
+        if typeof(k) == 'number' then
+            mix_t[k] = nil
+        end
+    end
+    return mix_t
+end
+
+local function get_objectlen(arrOrObj)
+    local result = 0
+    for k, v in arrOrObj do
+        if typeof(v) ~= 'number' then
+            result += 1
+        end
+    end
+    return result
+end
+
 return {
     format_print_value=format_print_value,
     get_argument_codepoint_order=get_argument_codepoint_order,
     get_object_or_array_len=get_object_or_array_len,
-    get_objectlen=get_objectlen,
     get_string_with_space=get_string_with_space,
     get_max_len=get_max_len,
+    get_objectlen=get_objectlen,
     string_prototype_repeat=string_prototype_repeat,
     object_to_key_array=object_to_key_array,
     table_to_string=table_to_string,
+    mix_table_to_object=mix_table_to_object,
 }
