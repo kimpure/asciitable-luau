@@ -1,0 +1,1 @@
+multitarget build --all --build-files src

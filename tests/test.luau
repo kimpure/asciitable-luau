@@ -16,6 +16,6 @@ local test_table = {
     },
 }
 
--- print(asciitable.table(test_table))
+print(asciitable.table(test_table))
 
 print(asciitable.tree('sunwoo', test_table))

@@ -1,10 +1,10 @@
 name = "kimpure/asciitable"
-version = "0.2.0"
+version = "0.2.1"
 description = "using luau console table && tree"
 authors = ["kimpure (sunwoo)"]
 repository = "https://github.com/kimpure/asciitable-luau"
 license = "MIT"
-includes = ["src", "README.md", "LICENSE.md", "pesde.toml"]
+includes = [ "src/**", "pesde.toml", "LICENCE.md", "README.md" ]
 
 [target]
 environment = "luau"
@@ -15,4 +15,8 @@ build_files = ["src"]
 default = "https://github.com/pesde-pkg/index"
 
 [dependencies]
-greentea = { name = "corecii/greentea", version = "^0.4.11", target = "lune" }
+greentea_luau = { name = "jiwonz/greentea_luau", version = "^0.1.0" }
+
+[dev_dependencies]
+darklua = { name = "pesde/darklua", version = "^0.16.0", target = "lune" }
+multitarget = { name = "jiwonz/multitarget", version = "^0.4.0-rc.28", target = "lune" }

@@ -1,4 +1,4 @@
-local green_tea = require("../lune_packages/greentea")
+local green_tea = require("../luau_packages/greentea_luau")
 
 local table_type = green_tea.build(green_tea.table({
 	[green_tea.any()] = green_tea.any(),
@@ -22,13 +22,82 @@ local tree_chars = config.tree_chars
 
 export type TableType = typeof(table_type:type())
 
+--[=[
+	@class ArsciiTable
+
+    ArsciiTable
+]=]
 export type Arscii = typeof(setmetatable(
 	{} :: {
+		--[=[
+			@within ArsciiTable
+
+			Whether to use round
+
+			```luau
+			asciitable.round = true
+			```
+		]=]
 		round: boolean,
+
+		--[=[
+			@within ArsciiTable
+
+			Whether to divide the cells in the table method
+
+			```luau
+			asciitable.mergeIndexLabels = true
+			```
+		]=]
 		mergeIndexLabels: boolean,
+
+		--[=[
+			@within ArsciiTable
+			
+			A string to display the index in the table
+		
+			```luau
+			asciitable.table_main_index = 'main index'
+			```
+		]=]
 		table_main_index: string,
+		
+		--[=[
+			@within ArsciiTable
+			
+			A string to display the value in the table
+		
+			```luau
+			asciitable.table_main_value = 'main values'
+			```
+		]=]
 		table_main_value: string,
+
+		--[=[
+			@within ArsciiTable
+			
+			Display in tree format
+			
+			```luau
+			print(asciitable.tree('sunwoo', test_table))
+			```
+
+			@param top -- The string to be located at the top
+			@param child -- Child to be included in tree
+		]=]
 		tree: (top: any, child: TableType) -> string,
+
+		--[=[
+			@within ArsciiTable
+			
+			Display in table format
+			
+			```luau
+			print(asciitable.table(test_table))
+			```
+
+			@param value -- Value to display
+		]=]
 		table: (value: TableType) -> string,
 	},
 	{}
