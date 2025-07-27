@@ -1,4 +1,4 @@
-local asciitable = require('../src')
+local asciitable = require('../src/lib')
 
 asciitable.mergeIndexLabels = true
 
