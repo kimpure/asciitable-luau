@@ -1,1 +1,1 @@
-multitarget build --all --build-files src
+multitarget build -a --build-files src
