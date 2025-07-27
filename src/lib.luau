@@ -80,81 +80,80 @@ export type TableType = typeof(table_type:type())
 
     ArsciiTable
 ]=]
-export type Arscii = typeof(setmetatable(
-	{} :: {
-		--[=[
-			@within ArsciiTable
+export type ArsciiTable = {
+	--[=[
+		@within ArsciiTable
 
-			Whether to use round
+		Whether to use round
 
-			```luau
-			asciitable.round = true
-			```
-		]=]
-		round: boolean,
+		```luau
+		asciitable.round = true
+		```
+	]=]
+	round: boolean,
 
-		--[=[
-			@within ArsciiTable
+	--[=[
+		@within ArsciiTable
 
-			Whether to divide the cells in the table method
+		Whether to divide the cells in the table method
 
-			```luau
-			asciitable.mergeIndexLabels = true
-			```
-		]=]
-		mergeIndexLabels: boolean,
+		```luau
+		asciitable.mergeIndexLabels = true
+		```
+	]=]
+	mergeIndexLabels: boolean,
 
-		--[=[
-			@within ArsciiTable
-			
-			A string to display the index in the table
+	--[=[
+		@within ArsciiTable
 		
-			```luau
-			asciitable.table_main_index = 'main index'
-			```
-		]=]
-		table_main_index: string,
+		A string to display the index in the table
+	
+		```luau
+		asciitable.table_main_index = 'main index'
+		```
+	]=]
+	table_main_index: string,
 
-		--[=[
-			@within ArsciiTable
-			
-			A string to display the value in the table
+	--[=[
+		@within ArsciiTable
 		
-			```luau
-			asciitable.table_main_value = 'main values'
-			```
-		]=]
-		table_main_value: string,
+		A string to display the value in the table
+	
+		```luau
+		asciitable.table_main_value = 'main values'
+		```
+	]=]
+	table_main_value: string,
 
-		--[=[
-			@within ArsciiTable
-			
-			Display in tree format
-			
-			```luau
-			print(asciitable.tree('sunwoo', test_table))
-			```
+	--[=[
+		@within ArsciiTable
+		
+		Display in tree format
+		
+		```luau
+		print(asciitable.tree('sunwoo', test_table))
+		```
 
-			@param top -- The string to be located at the top
-			@param child -- Child to be included in tree
-		]=]
-		tree: (top: any, child: TableType) -> string,
+		@param top -- The string to be located at the top
+		@param child -- Child to be included in tree
+	]=]
+	tree: (top: any, child: TableType) -> string,
 
-		--[=[
-			@within ArsciiTable
-			
-			Display in table format
-			
-			```luau
-			print(asciitable.table(test_table))
-			```
+	--[=[
+		@within ArsciiTable
+		
+		Display in table format
+		
+		```luau
+		print(asciitable.table(test_table))
+		```
 
-			@param value -- Value to display
-		]=]
-		table: (value: TableType) -> string,
-	},
-	{}
-))
+		@param value -- Value to display
+	]=]
+	table: (value: TableType) -> string,
+}
+
+local ArsciiTable = {} :: ArsciiTable
 
 local utf8_len = utf8.len :: (string, number?, number?) -> number
 
@@ -316,8 +315,8 @@ local function get_objectlen(arrOrObj)
 	return result
 end
 
-local function arscii_change_setting(arscii: Arscii)
-	if arscii.round then
+local function arscii_change_setting()
+	if ArsciiTable.round then
 		table_chars = chars.table_round_chars
 		tree_chars = chars.tree_round_chars
 		return
@@ -327,11 +326,11 @@ local function arscii_change_setting(arscii: Arscii)
 	tree_chars = chars.tree_chars
 end
 
-local function arscii_table(value: TableType, arscii: Arscii): string
+local function arscii_table(value: TableType): string
 	table_type:assert(value)
 
-	local table_main_index = arscii.table_main_index
-	local table_main_value = arscii.table_main_value
+	local table_main_index = ArsciiTable.table_main_index
+	local table_main_value = ArsciiTable.table_main_value
 
 	local result = ""
 
@@ -408,7 +407,7 @@ local function arscii_table(value: TableType, arscii: Arscii): string
 	result ..= `{table_chars.middle}`
 
 	for i = 1, #value_key do
-		if arscii.mergeIndexLabels or i == 1 then
+		if ArsciiTable.mergeIndexLabels or i == 1 then
 			result ..= `\n{table_chars.leftMiddle}{string_prototype_repeat(
 				table_chars.middleMiddle,
 				get_max_len(table_main_index, value_key) + 2
@@ -489,7 +488,7 @@ local function arscii_table(value: TableType, arscii: Arscii): string
 	return result
 end
 
-local function arscii_tree(top: any, children: TableType, arscii: Arscii): string
+local function arscii_tree(top: any, children: TableType): string
 	table_type:assert(children)
 
 	local result = tostring(top)
@@ -561,25 +560,19 @@ local function arscii_tree(top: any, children: TableType, arscii: Arscii): strin
 	return result
 end
 
-local arscii_struct = {}
-arscii_struct.round = false
-arscii_struct.mergeIndexLabels = false
-arscii_struct.table_main_index = "(index)"
-arscii_struct.table_main_value = "Values"
+ArsciiTable.round = false
+ArsciiTable.mergeIndexLabels = false
+ArsciiTable.table_main_index = "(index)"
+ArsciiTable.table_main_value = "Values"
 
-local arscii_impl = {}
-arscii_impl.__index = arscii_impl
-
-local arscii = setmetatable(arscii_struct, arscii_impl)
-
-function arscii.table(value)
-	arscii_change_setting(arscii)
-	return arscii_table(value, arscii)
+function ArsciiTable.table(value)
+	arscii_change_setting()
+	return arscii_table(value)
 end
 
-function arscii.tree(top, child)
-	arscii_change_setting(arscii)
-	return arscii_tree(top, child, arscii)
+function ArsciiTable.tree(top, child)
+	arscii_change_setting()
+	return arscii_tree(top, child)
 end
 
-return arscii :: Arscii
+return ArsciiTable
