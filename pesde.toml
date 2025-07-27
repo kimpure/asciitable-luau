@@ -8,7 +8,7 @@ includes = [ "src/**", "pesde.toml", "LICENCE.md", "README.md" ]
 
 [target]
 environment = "luau"
-lib = "src/init.luau"
+lib = "src/lib.luau"
 build_files = ["src"]
 
 [indices]
