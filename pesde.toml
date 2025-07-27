@@ -14,6 +14,9 @@ build_files = ["src"]
 [indices]
 default = "https://github.com/pesde-pkg/index"
 
+[engines]
+lune = "0.8.9"
+
 [dependencies]
 greentea_luau = { name = "jiwonz/greentea_luau", version = "^0.1.0" }
 
