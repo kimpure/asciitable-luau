@@ -15,11 +15,11 @@ build_files = ["src"]
 default = "https://github.com/pesde-pkg/index"
 
 [engines]
-lune = "0.8.9"
+pesde = "^0.7.1"
 
 [dependencies]
-greentea_luau = { name = "jiwonz/greentea_luau", version = "^0.1.0" }
+greentea_luau = { name = "jiwonz/greentea_luau", version = "^0.2.0" }
 
 [dev_dependencies]
-darklua = { name = "pesde/darklua", version = "^0.16.0", target = "lune" }
-multitarget = { name = "jiwonz/multitarget", version = "^0.4.0-rc.28", target = "lune" }
+darklua = { name = "pesde/darklua", version = "^0.17.1", target = "lune" }
+multitarget = { name = "jiwonz/multitarget", version = "^0.4.0-rc.30", target = "lune" }
