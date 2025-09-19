@@ -30,9 +30,9 @@ round
 asciitable.round = true
 ```
 
-mergeIndexLabels
+merge_index_labels
 ```luau
-asciitable.mergeIndexLabels = false
+asciitable.merge_index_labels = false
 ```
 
 ## using lib
