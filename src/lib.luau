@@ -98,10 +98,10 @@ export type ArsciiTable = {
 		Whether to divide the cells in the table method
 
 		```luau
-		asciitable.mergeIndexLabels = true
+		asciitable.merge_index_labels = true
 		```
 	]=]
-	mergeIndexLabels: boolean,
+	merge_index_labels: boolean,
 
 	--[=[
 		@within ArsciiTable
@@ -407,7 +407,7 @@ local function arscii_table(value: TableType): string
 	result ..= `{table_chars.middle}`
 
 	for i = 1, #value_key do
-		if ArsciiTable.mergeIndexLabels or i == 1 then
+		if ArsciiTable.merge_index_labels or i == 1 then
 			result ..= `\n{table_chars.leftMiddle}{string_prototype_repeat(
 				table_chars.middleMiddle,
 				get_max_len(table_main_index, value_key) + 2
@@ -491,77 +491,60 @@ end
 local function arscii_tree(top: any, children: TableType): string
 	table_type:assert(children)
 
-	local result = tostring(top)
+	local result = tostring(top) .. "\n"
 
-	local function add_tree(loop_num: number, children, last_child)
-		local children_key = {}
-		local children_value = {}
+	children = mix_table_to_object(children)
 
-		children = mix_table_to_object(children)
+	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
+		local loop_index = 0
+		
+		for k, v in value do
+			loop_index += 1
+			local is_last = get_objectlen(value) == loop_index
 
-		for k, v in children do
-			if typeof(k) == "number" then
-				continue
+			for i=1, #lt do
+				if lt[i] then
+					result ..= " "
+				else
+					result ..= table_chars.middle
+				end
 			end
-			children_key[#children_key + 1] = k
-		end
-
-		children_key = get_argument_codepoint_order(children_key)
-
-		for i = 1, #children_key do
-			children_value[i] = children[children_key[i]]
-		end
-
-		for i = 1, #children_key do
-			result ..= "\n"
-
-			if last_child then
-				result ..= string_prototype_repeat(" ", loop_num)
+			
+			if is_last then
+				result ..= table_chars.bottomLeft
 			else
-				result ..= string_prototype_repeat(tree_chars.middle, loop_num)
+				result ..= table_chars.leftMiddle
 			end
-
-			if #children_key == i then
-				result ..= tree_chars.bottomLeft
+	
+			if typeof(v) == "table" then
+				result ..= table_chars.topMiddle
 			else
-				result ..= tree_chars.leftMiddle
+				result ..= table_chars.middleMiddle
 			end
+	
+			result ..= " " .. tostring(k)
+	
+			if typeof(v) == "table" then
+				result ..= "\n"
+				
+				table.insert(lt, is_last)
 
-			local child = children_value[i]
+				make_table_tree(tab_size + 1, v, lt)
 
-			if typeof(child) ~= "table" then
-				result ..= tree_chars.middleMiddle
-
-				result ..= ` {children_key[i]}: {format_print_value(child)}`
-
-				continue
+				table.remove(lt)
+			else
+				result ..= ": " .. format_print_value(v) .. "\n"
 			end
-
-			child = mix_table_to_object(child)
-
-			if get_objectlen(child) == 0 then
-				result ..= tree_chars.middleMiddle
-
-				result ..= ` {children_key[i]}`
-
-				continue
-			end
-
-			result ..= tree_chars.topMiddle
-
-			result ..= ` {children_key[i]}`
-
-			add_tree(loop_num + 1, child, #children_key == i)
 		end
 	end
 
-	add_tree(0, children, false)
+	make_table_tree(0, children, {})
 
 	return result
 end
 
 ArsciiTable.round = false
-ArsciiTable.mergeIndexLabels = false
+ArsciiTable.merge_index_labels = false
 ArsciiTable.table_main_index = "(index)"
 ArsciiTable.table_main_value = "Values"
 
