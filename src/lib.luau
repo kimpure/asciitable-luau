@@ -497,8 +497,18 @@ local function arscii_tree(top: any, children: TableType): string
 
 	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
 		local loop_index = 0
+
+		local keys = {}
+
+		for k, _ in value do
+			keys[#keys + 1] = k
+		end
+
+		local sort_keys = get_argument_codepoint_order(keys)
 		
-		for k, v in value do
+		for i=1, #sort_keys do
+			local k = sort_keys[i]
+			local v = value[k]
 			loop_index += 1
 			local is_last = get_objectlen(value) == loop_index
 
