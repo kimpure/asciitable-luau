@@ -4,74 +4,37 @@ local table_type = green_tea.build(green_tea.table({
 	[green_tea.any()] = green_tea.any(),
 }))
 
-local chars = {
-	table_chars = {
-		middleMiddle = "─",
-		rowMiddle = "┼",
-		topRight = "┐",
-		topLeft = "┌",
-		leftMiddle = "├",
-		topMiddle = "┬",
-		bottomRight = "┘",
-		bottomLeft = "└",
-		bottomMiddle = "┴",
-		rightMiddle = "┤",
-		left = "│ ",
-		right = " │",
-		middle = "│",
-	},
-
-	tree_chars = {
-		middleMiddle = "─",
-		rowMiddle = "┼",
-		topRight = "┐",
-		topLeft = "┌",
-		leftMiddle = "├",
-		topMiddle = "┬",
-		bottomRight = "┘",
-		bottomLeft = "└",
-		bottomMiddle = "┴",
-		rightMiddle = "┤",
-		left = "│ ",
-		right = " │",
-		middle = "│",
-	},
-
-	table_round_chars = {
-		middleMiddle = "─",
-		rowMiddle = "┼",
-		topRight = "╮",
-		topLeft = "╭",
-		leftMiddle = "├",
-		topMiddle = "┬",
-		bottomRight = "╯",
-		bottomLeft = "╰",
-		bottomMiddle = "┴",
-		rightMiddle = "┤",
-		left = "│ ",
-		right = " │",
-		middle = "│",
-	},
-
-	tree_round_chars = {
-		middleMiddle = "─",
-		rowMiddle = "┼",
-		topRight = "╮",
-		topLeft = "╭",
-		leftMiddle = "├",
-		topMiddle = "┬",
-		bottomRight = "╯",
-		bottomLeft = "╰",
-		bottomMiddle = "┴",
-		rightMiddle = "┤",
-		left = "│ ",
-		right = " │",
-		middle = "│",
-	},
+local normal_chars = {
+	middleMiddle = "─",
+	rowMiddle = "┼",
+	topRight = "┐",
+	topLeft = "┌",
+	leftMiddle = "├",
+	topMiddle = "┬",
+	bottomRight = "┘",
+	bottomLeft = "└",
+	bottomMiddle = "┴",
+	rightMiddle = "┤",
+	left = "│ ",
+	right = " │",
+	middle = "│",
 }
 
-local table_chars = chars.table_chars
-local tree_chars = chars.tree_chars
+local round_chars = {
+	middleMiddle = "─",
+	rowMiddle = "┼",
+	topRight = "╮",
+	topLeft = "╭",
+	leftMiddle = "├",
+	topMiddle = "┬",
+	bottomRight = "╯",
+	bottomLeft = "╰",
+	bottomMiddle = "┴",
+	rightMiddle = "┤",
+	left = "│ ",
+	right = " │",
+	middle = "│",
+}
 
 export type TableType = typeof(table_type:type())
 
@@ -153,7 +116,7 @@ export type ArsciiTable = {
 	table: (value: TableType) -> string,
 }
 
-local ArsciiTable = {} :: ArsciiTable
+local asciitable = {} :: ArsciiTable
 
 local utf8_len = utf8.len :: (string, number?, number?) -> number
 
@@ -315,22 +278,16 @@ local function get_objectlen(arrOrObj)
 	return result
 end
 
-local function arscii_change_setting()
-	if ArsciiTable.round then
-		table_chars = chars.table_round_chars
-		tree_chars = chars.tree_round_chars
-		return
-	end
-
-	table_chars = chars.table_chars
-	tree_chars = chars.tree_chars
-end
-
-local function arscii_table(value: TableType): string
+function asciitable.table(value)
 	table_type:assert(value)
 
-	local table_main_index = ArsciiTable.table_main_index
-	local table_main_value = ArsciiTable.table_main_value
+	local chars = if asciitable.round then
+		round_chars
+	else
+		normal_chars
+
+	local table_main_index = asciitable.table_main_index
+	local table_main_value = asciitable.table_main_value
 
 	local result = ""
 
@@ -364,93 +321,93 @@ local function arscii_table(value: TableType): string
 	values_key = object_to_key_array(values_value)
 	values_key = get_argument_codepoint_order(values_key)
 
-	result ..= `{table_chars.topLeft}{string_prototype_repeat(
-		table_chars.middleMiddle,
+	result ..= `{chars.topLeft}{string_prototype_repeat(
+		chars.middleMiddle,
 		get_max_len(table_main_index, value_key) + 2
 	)}`
 
 	for i = 1, #index_key do
-		result ..= `{table_chars.topMiddle}{string_prototype_repeat(
-			table_chars.middleMiddle,
+		result ..= `{chars.topMiddle}{string_prototype_repeat(
+			chars.middleMiddle,
 			get_max_len(index_key[i], index_value[index_key[i]]) + 2
 		)}`
 	end
 
 	if values_key[1] then
-		result ..= `{table_chars.topMiddle}{string_prototype_repeat(
-			table_chars.middleMiddle,
+		result ..= `{chars.topMiddle}{string_prototype_repeat(
+			chars.middleMiddle,
 			get_max_len(table_main_value, values_value) + 2
 		)}`
 	end
 
-	result ..= `{table_chars.topRight}\n`
+	result ..= `{chars.topRight}\n`
 
-	result ..= `{table_chars.middle}{get_string_with_space(
+	result ..= `{chars.middle}{get_string_with_space(
 		table_main_index,
 		get_max_len(table_main_index, value_key) + 2
 	)}`
 
 	for i = 1, #index_key do
-		result ..= `{table_chars.middle}{get_string_with_space(
+		result ..= `{chars.middle}{get_string_with_space(
 			index_key[i],
 			get_max_len(index_key[i], index_value[index_key[i]]) + 2
 		)}`
 	end
 
 	if values_key[1] then
-		result ..= `{table_chars.middle}{get_string_with_space(
+		result ..= `{chars.middle}{get_string_with_space(
 			table_main_value,
 			get_max_len(table_main_value, values_value) + 2
 		)}`
 	end
 
-	result ..= `{table_chars.middle}`
+	result ..= `{chars.middle}`
 
 	for i = 1, #value_key do
-		if ArsciiTable.merge_index_labels or i == 1 then
-			result ..= `\n{table_chars.leftMiddle}{string_prototype_repeat(
-				table_chars.middleMiddle,
+		if asciitable.merge_index_labels or i == 1 then
+			result ..= `\n{chars.leftMiddle}{string_prototype_repeat(
+				chars.middleMiddle,
 				get_max_len(table_main_index, value_key) + 2
 			)}`
 
 			for i = 1, #index_key do
-				result ..= `{table_chars.rowMiddle}{string_prototype_repeat(
-					table_chars.middleMiddle,
+				result ..= `{chars.rowMiddle}{string_prototype_repeat(
+					chars.middleMiddle,
 					get_max_len(index_key[i], index_value[index_key[i]]) + 2
 				)}`
 			end
 
 			if values_key[1] then
-				result ..= `{table_chars.rowMiddle}{string_prototype_repeat(
-					table_chars.middleMiddle,
+				result ..= `{chars.rowMiddle}{string_prototype_repeat(
+					chars.middleMiddle,
 					get_max_len(table_main_value, values_value) + 2
 				)}`
 			end
 
-			result ..= table_chars.rightMiddle
+			result ..= chars.rightMiddle
 		end
 
-		result ..= `\n{table_chars.middle}{get_string_with_space(
+		result ..= `\n{chars.middle}{get_string_with_space(
 			value_key[i],
 			get_max_len(table_main_index, value_key) + 2
 		)}`
 
 		for j = 1, #index_key do
 			if index_value[index_key[j]][value_key[i]] then
-				result ..= `{table_chars.middle}{get_string_with_space(
+				result ..= `{chars.middle}{get_string_with_space(
 					index_value[index_key[j]][value_key[i]],
 					get_max_len(index_key[j], index_value[index_key[j]]) + 2
 				)}`
 				continue
 			end
 
-			result ..= `{table_chars.middle}{string_prototype_repeat(
+			result ..= `{chars.middle}{string_prototype_repeat(
 				" ",
 				get_max_len(index_key[j], index_value[index_key[j]]) + 2
 			)}`
 		end
 
-		result ..= table_chars.middle
+		result ..= chars.middle
 
 		if values_value[value_key[i]] then
 			result ..= `{get_string_with_space(
@@ -461,36 +418,41 @@ local function arscii_table(value: TableType): string
 			result ..= `{string_prototype_repeat(" ", get_max_len(table_main_value, values_value) + 2)}`
 		end
 
-		result ..= table_chars.middle
+		result ..= chars.middle
 	end
 
-	result ..= `\n{table_chars.bottomLeft}{string_prototype_repeat(
-		table_chars.middleMiddle,
+	result ..= `\n{chars.bottomLeft}{string_prototype_repeat(
+		chars.middleMiddle,
 		get_max_len(table_main_index, value_key) + 2
 	)}`
 
 	for i = 1, #index_key do
-		result ..= `{table_chars.bottomMiddle}{string_prototype_repeat(
-			table_chars.middleMiddle,
+		result ..= `{chars.bottomMiddle}{string_prototype_repeat(
+			chars.middleMiddle,
 			get_max_len(index_key[i], index_value[index_key[i]]) + 2
 		)}`
 	end
 
 	if values_key[1] then
-		result ..= `{table_chars.bottomMiddle}{string_prototype_repeat(
-			table_chars.middleMiddle,
+		result ..= `{chars.bottomMiddle}{string_prototype_repeat(
+			chars.middleMiddle,
 			get_max_len(table_main_value, values_value) + 2
 		)}`
 	end
 
-	result ..= table_chars.bottomRight
+	result ..= chars.bottomRight
 
 	return result
 end
 
-local function arscii_tree(top: any, children: TableType): string
+function asciitable.tree(top, children)
 	table_type:assert(children)
 
+	local chars = if asciitable.round then
+		round_chars
+	else
+		normal_chars
+	
 	local result = tostring(top) .. "\n"
 
 	children = mix_table_to_object(children)
@@ -516,20 +478,20 @@ local function arscii_tree(top: any, children: TableType): string
 				if lt[i] then
 					result ..= " "
 				else
-					result ..= table_chars.middle
+					result ..= chars.middle
 				end
 			end
 			
 			if is_last then
-				result ..= table_chars.bottomLeft
+				result ..= chars.bottomLeft
 			else
-				result ..= table_chars.leftMiddle
+				result ..= chars.leftMiddle
 			end
 	
 			if typeof(v) == "table" then
-				result ..= table_chars.topMiddle
+				result ..= chars.topMiddle
 			else
-				result ..= table_chars.middleMiddle
+				result ..= chars.middleMiddle
 			end
 	
 			result ..= " " .. tostring(k)
@@ -553,19 +515,9 @@ local function arscii_tree(top: any, children: TableType): string
 	return result
 end
 
-ArsciiTable.round = false
-ArsciiTable.merge_index_labels = false
-ArsciiTable.table_main_index = "(index)"
-ArsciiTable.table_main_value = "Values"
+asciitable.round = false
+asciitable.merge_index_labels = false
+asciitable.table_main_index = "(index)"
+asciitable.table_main_value = "Values"
 
-function ArsciiTable.table(value)
-	arscii_change_setting()
-	return arscii_table(value)
-end
-
-function ArsciiTable.tree(top, child)
-	arscii_change_setting()
-	return arscii_tree(top, child)
-end
-
-return ArsciiTable
+return asciitable
