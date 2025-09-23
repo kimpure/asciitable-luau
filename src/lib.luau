@@ -472,7 +472,7 @@ function asciitable.tree(top, children)
 			local k = sort_keys[i]
 			local v = value[k]
 			loop_index += 1
-			local is_last = get_objectlen(value) == loop_index
+			local is_last = get_object_or_array_len(value) == loop_index
 
 			for i=1, #lt do
 				if lt[i] then
