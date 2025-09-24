@@ -268,16 +268,6 @@ local function mix_table_to_object<T>(mix_t: { [any]: T }): { [string]: T }
 	return mix_t
 end
 
-local function get_objectlen(arrOrObj)
-	local result = 0
-	for k, v in arrOrObj do
-		if typeof(v) ~= "number" then
-			result += 1
-		end
-	end
-	return result
-end
-
 function asciitable.table(value)
 	table_type:assert(value)
 
@@ -488,7 +478,7 @@ function asciitable.tree(top, children)
 				result ..= chars.leftMiddle
 			end
 	
-			if typeof(v) == "table" then
+			if typeof(v) == "table" and get_object_or_array_len(v) ~= 0 then
 				result ..= chars.topMiddle
 			else
 				result ..= chars.middleMiddle
@@ -500,7 +490,7 @@ function asciitable.tree(top, children)
 				result ..= "\n"
 				
 				table.insert(lt, is_last)
-
+				
 				make_table_tree(tab_size + 1, v, lt)
 
 				table.remove(lt)
@@ -509,8 +499,8 @@ function asciitable.tree(top, children)
 			end
 		end
 	end
-
-	make_table_tree(0, children, {})
+	
+	make_table_tree(0, children, get_object_or_array_len(children) == 1 and { true } or {})
 
 	return result
 end
