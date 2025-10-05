@@ -1,13 +1,18 @@
 local gt = require("../luau_packages/greentea_luau")
-local table_type = gt.build(gt.table({ [gt.any()] = gt.any() }))
-local numarr_type = gt.build(
-	gt.array(
-		gt.union(
-			gt.number(),
-			gt.array(gt.number())
-		)
-	)
+local mixedtable_type = gt.build(
+	gt.table({
+		[gt.any()] = gt.any()
+	})
 )
+local numberarray_type = gt.build(
+	gt.array(gt.number())
+)
+local plotoption_type = gt.build(gt.optional(
+	gt.struct({
+		offset = gt.opt(gt.number()),
+		height = gt.opt(gt.number()),
+	})
+))
 
 local normal_symbols = {
 	middleMiddle = "─",
@@ -79,120 +84,115 @@ export type ArsciiTable = {
 		Draw a chart
 		
 		```luau
-		print(asciitable.chart({ 1, 2, 3, 4 }))
+		print(asciitable.plot({ 1, 2, 3, 4 }))
 		```
 
 		@param series Number array to be drawn
-		@param offset Chart's offset
-		@param height Chart's height
+		@param cfg Draw options
 		@return string
 	]=]
-	chart: (series: { number } | { { number } }, offset: number?, height: number?) -> string,
+	plot: (series: { number }, opts: PlotConfig?) -> string,
 }
 
 local asciitable = {} :: ArsciiTable
 asciitable.round = false
 
-local function mixedtable_len(tab: { [any]: any })
-	local result = 0
+function asciitable.tree(top, children)
+	assert(mixedtable_type(children))
 	
-	for k, v in tab do
-		result += 1
-	end
-
-	return result
-end
-
-local function is_array(arr: { [any]: any })
-	for k, v in arr do
-		if typeof(k) == "number" then
-			continue
+	local function mixedtable_len(tab: { [any]: any })
+		local result = 0
+		
+		for k, v in tab do
+			result += 1
 		end
-		return false
-	end
-	return true
-end
 
-local function table_to_string(tab: { [any]: any }): string
-	local function format_print_value(value: any)
-		local value_type = typeof(value)
-		if value_type == "string" then
-			return `'{value}'`
-		end
-		return tostring(value)
+		return result
 	end
 
-	if typeof(tab) ~= "table" then
-		return tab
-	end
-
-	local res = "{ "
-	local rep = 0
-	local len = mixedtable_len(tab)
-
-	if is_array(tab) then
-		return "[Array]"
-	end
-
-	for k, v in tab do
-		rep += 1
-
-		local pt = len == rep and "" or ", "
-
-		if typeof(v) ~= "table" then
-			v = format_print_value(v)
-			if typeof(k) ~= "number" then
-				res ..= `[{format_print_value(k)}] = {v}{pt}`
+	local function is_array(arr: { [any]: any })
+		for k, v in arr do
+			if typeof(k) == "number" then
 				continue
 			end
-			res ..= `{v}{pt}`
-			continue
+			return false
 		end
-
-		if not is_array(v) then
-			res ..= `[{format_print_value(k)}] = {table_to_string(v)}{pt}`
-			continue
-		end
-
-		if typeof(k) ~= "number" then
-			res ..= `[{format_print_value(k)}] = [Array]{pt}`
-			continue
-		end
-
-		res ..= `[Array]{pt}`
+		return true
 	end
 
-	return res .. " }"
-end
+	local function table_to_string(tab: { [any]: any }): string
+		local function format_print_value(value: any)
+			local value_type = typeof(value)
+			if value_type == "string" then
+				return `'{value}'`
+			end
+			return tostring(value)
+		end
 
-local function format_print_value(value: any): string
-	local value_type = typeof(value)
+		if typeof(tab) ~= "table" then
+			return tab
+		end
 
-	if value_type == "table" then
-		return table_to_string(value)
-	end
+		local res = "{ "
+		local rep = 0
+		local len = mixedtable_len(tab)
 
-	if value_type == "string" then
-		if string.find(value, "\n") then
-			if string.sub(value, -1) == "\n" then
-				value = string.sub(value, 1, #value - 2)
+		if is_array(tab) then
+			return "[Array]"
+		end
+
+		for k, v in tab do
+			rep += 1
+
+			local pt = len == rep and "" or ", "
+
+			if typeof(v) ~= "table" then
+				v = format_print_value(v)
+				if typeof(k) ~= "number" then
+					res ..= `[{format_print_value(k)}] = {v}{pt}`
+					continue
+				end
+				res ..= `{v}{pt}`
+				continue
 			end
 
-			return `[[{value}]]`
+			if not is_array(v) then
+				res ..= `[{format_print_value(k)}] = {table_to_string(v)}{pt}`
+				continue
+			end
+
+			if typeof(k) ~= "number" then
+				res ..= `[{format_print_value(k)}] = [Array]{pt}`
+				continue
+			end
+
+			res ..= `[Array]{pt}`
 		end
 
-		return `'{value}'`
+		return res .. " }"
 	end
 
-	return tostring(value)
-end
+	local function format_print_value(value: any): string
+		local value_type = typeof(value)
 
-local function char_clamp(val, lower, upper)
-	return math.max(lower, math.min(val, upper))
-end
+		if value_type == "table" then
+			return table_to_string(value)
+		end
 
-function asciitable.tree(top, children)
-	assert(table_type(children))
+		if value_type == "string" then
+			if string.find(value, "\n") then
+				if string.sub(value, -1) == "\n" then
+					value = string.sub(value, 1, #value - 2)
+				end
+
+				return `[[{value}]]`
+			end
+
+			return `'{value}'`
+		end
+
+		return tostring(value)
+	end
 
 	local symbols = asciitable.round and round_symbols or normal_symbols
 	local result = tostring(top) .. "\n"
@@ -264,102 +264,83 @@ function asciitable.tree(top, children)
 	return result
 end
 
-function asciitable.chart(series, offset, height)
-	assert(numarr_type(series)) 
+type PlotConfig = {
+	offset: number?,
+	height: number?,
+}
 
-	local len = #series
+function asciitable.plot(series, cfg)
+	assert(numberarray_type(series))
+	assert(plotoption_type(cfg))
 
-	if len == 0 then
-		return ""
-	end	
-
-	local series = (type(series[1]) ~= "table" and { series :: { number } } or series) :: { { number } }
-
+	local cfg: PlotConfig = cfg or {}
 	local symbols = asciitable.round and round_symbols or normal_symbols
 
 	local minimum, maximum = math.huge, -math.huge
-
-	for i=1, #series do
-		for j=1, #series[i] do
-			local val = series[i][j]
-			minimum = math.min(minimum, val)
-			maximum = math.max(maximum, val)
-		end
-	end
+    
+	for i = 1, #series do
+        minimum = math.min(minimum, series[i])
+        maximum = math.max(maximum, series[i])
+    end
 
 	if minimum > maximum then
 		return ""
 	end
 
-	local interval = maximum - minimum
+	local offset = cfg.offset or 3
+	local height = cfg.height or (maximum - minimum)
 
-	local offset = offset or 3
-	local height = height or interval
- 
-	local ratio = interval > 0 and height / interval or 1
+	local ratio = (maximum - minimum) > 0 and height / (maximum - minimum) or 1
 
-	local min2 = math.floor(minimum * ratio)
-	local max2 = math.ceil(maximum * ratio)
+    local min2 = math.floor(minimum * ratio)
+    local max2 = math.ceil(maximum * ratio)
+    local rows = max2 - min2
 
-	local rows = max2 - min2
-	local width = 0
+	local width = #series + offset
+    local result = {}
 
-	for i=1, #series do
-		width = math.max(width, #series[i])
+    for i=1, rows + 1 do
+        result[i] = {}
+        for j=1, width do
+            result[i][j] = " "
+        end
+    end
+
+	for i=0, max2 - min2, 1 do
+		local val = maximum - (i * (maximum - minimum) / (rows ~= 0 and rows or 1))
+		result[i + 1][1] = string.format("%8.2f", val)
+        result[i + 1][offset] = symbols.rightMiddle
 	end
 
-	width += offset
+	for x=1, #series do
+		local d0 = series[x]
+		local d1 = series[x + 1]
 
-	local result = {}
+		local y0 = math.round(math.clamp(d0, minimum, maximum) * ratio) - min2
+        local y1 = d1 and math.round(math.clamp(d1, minimum, maximum) * ratio) - min2 or nil
 
-	for i=1, rows + 1 do
-		result[i] = {}
+		local row0 = rows - y0 + 1
+		local col = x + offset
 
-		for j=1, width do
-			result[i][j] = " "
+		result[row0][col] = symbols.middleMiddle
+
+		if not y1 then
+			continue
 		end
-	end
 
-	for i=min2, max2, 1 do
-		local label = string.format(maximum - ((i - min2)  * interval / (rows == 0 and 1 or rows)) :: any, "%8.2f") .. " "
-		result[i - min2 + 1][math.max(offset - #label, 1)] = label
-		result[i - min2 + 1][offset] = i == min2 and "┼" or "┤"
-	end
+		local row1 = rows - y1 + 1
+		result[row1][col] = y0 > y1 and symbols.bottomLeft or symbols.topLeft
+		result[row0][col] = y0 > y1 and symbols.topRight or symbols.bottomRight
 
-	local d0: number
-	local d1: number
-
-	for i=1, #series do
-		for x=1, #series[i] - 1 do
-			d0 = series[i][x]
-			d1 = series[i][x + 1]
-
-			local y0 = math.round(char_clamp(d0, minimum, maximum) * ratio) - min2
-			local y1 = math.round(char_clamp(d1, minimum, maximum) * ratio) - min2
-
-			if y0 == y1 then
-				result[rows - y0 + 1][x + offset] = "─"
-			else
-				result[rows - y1 + 1][x + offset] = y0 > y1 and symbols.bottomLeft or symbols.topLeft
-				result[rows - y0 + 1][x + offset] = y0 > y1 and symbols.topRight or symbols.bottomRight
-
-				local s = math.min(y0, y1) + 1
-				local e = math.max(y0, y1) - 1
-
-				for k=s, e, 1 do
-					result[rows - k + 1][x + offset] = "│"
-				end
-			end
+		for i=math.min(row0, row1) + 1, math.max(row0, row1) - 1 do
+			result[i][col] = symbols.middle
 		end
 	end
 
 	local con = ""
 
-	for i = 1, #result do
-		con = con .. table.concat(result[i])
-		if i ~= #result then
-			con = con .. "\n"
-		end
+	for i=1, #result do
+		con ..= table.concat(result[i]) .. "\n"
 	end
 
 	return con
