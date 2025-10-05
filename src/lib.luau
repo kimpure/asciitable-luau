@@ -1,7 +1,15 @@
-local green_tea = require("../luau_packages/greentea_luau")
-local table_type = green_tea.build(green_tea.table({ [green_tea.any()] = green_tea.any() }))
+local gt = require("../luau_packages/greentea_luau")
+local table_type = gt.build(gt.table({ [gt.any()] = gt.any() }))
+local numarr_type = gt.build(
+	gt.array(
+		gt.union(
+			gt.number(),
+			gt.array(gt.number())
+		)
+	)
+)
 
-local normal_chars = {
+local normal_symbols = {
 	middleMiddle = "─",
 	rowMiddle = "┼",
 	topRight = "┐",
@@ -17,7 +25,7 @@ local normal_chars = {
 	middle = "│",
 }
 
-local round_chars = {
+local round_symbols = {
 	middleMiddle = "─",
 	rowMiddle = "┼",
 	topRight = "╮",
@@ -75,9 +83,11 @@ export type ArsciiTable = {
 		```
 
 		@param series Number array to be drawn
+		@param offset Chart's offset
+		@param height Chart's height
 		@return string
 	]=]
-	chart: (series: { number }) -> string,
+	chart: (series: { number } | { { number } }, offset: number?, height: number?) -> string,
 }
 
 local asciitable = {} :: ArsciiTable
@@ -177,10 +187,14 @@ local function format_print_value(value: any): string
 	return tostring(value)
 end
 
+local function char_clamp(val, lower, upper)
+	return math.max(lower, math.min(val, upper))
+end
+
 function asciitable.tree(top, children)
 	assert(table_type(children))
 
-	local chars = asciitable.round and round_chars or normal_chars
+	local symbols = asciitable.round and round_symbols or normal_symbols
 	local result = tostring(top) .. "\n"
 
 	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
@@ -213,20 +227,20 @@ function asciitable.tree(top, children)
 				if lt[i] then
 					result ..= " "
 				else
-					result ..= chars.middle
+					result ..= symbols.middle
 				end
 			end
 			
 			if is_last then
-				result ..= chars.bottomLeft
+				result ..= symbols.bottomLeft
 			else
-				result ..= chars.leftMiddle
+				result ..= symbols.leftMiddle
 			end
 	
 			if typeof(v) == "table" and mixedtable_len(v) ~= 0 then
-				result ..= chars.topMiddle
+				result ..= symbols.topMiddle
 			else
-				result ..= chars.middleMiddle
+				result ..= symbols.middleMiddle
 			end
 	
 			result ..= " " .. tostring(k)
@@ -250,9 +264,105 @@ function asciitable.tree(top, children)
 	return result
 end
 
-function asciitable.chart(series: { number })
-	assert(table_type(series))
+function asciitable.chart(series, offset, height)
+	assert(numarr_type(series)) 
 
+	local len = #series
+
+	if len == 0 then
+		return ""
+	end	
+
+	local series = (type(series[1]) ~= "table" and { series :: { number } } or series) :: { { number } }
+
+	local symbols = asciitable.round and round_symbols or normal_symbols
+
+	local minimum, maximum = math.huge, -math.huge
+
+	for i=1, #series do
+		for j=1, #series[i] do
+			local val = series[i][j]
+			minimum = math.min(minimum, val)
+			maximum = math.max(maximum, val)
+		end
+	end
+
+	if minimum > maximum then
+		return ""
+	end
+
+	local interval = maximum - minimum
+
+	local offset = offset or 3
+	local height = height or interval
+ 
+	local ratio = interval > 0 and height / interval or 1
+
+	local min2 = math.floor(minimum * ratio)
+	local max2 = math.ceil(maximum * ratio)
+
+	local rows = max2 - min2
+	local width = 0
+
+	for i=1, #series do
+		width = math.max(width, #series[i])
+	end
+
+	width += offset
+
+	local result = {}
+
+	for i=1, rows + 1 do
+		result[i] = {}
+
+		for j=1, width do
+			result[i][j] = " "
+		end
+	end
+
+	for i=min2, max2, 1 do
+		local label = string.format(maximum - ((i - min2)  * interval / (rows == 0 and 1 or rows)) :: any, "%8.2f") .. " "
+		result[i - min2 + 1][math.max(offset - #label, 1)] = label
+		result[i - min2 + 1][offset] = i == min2 and "┼" or "┤"
+	end
+
+	local d0: number
+	local d1: number
+
+	for i=1, #series do
+		for x=1, #series[i] - 1 do
+			d0 = series[i][x]
+			d1 = series[i][x + 1]
+
+			local y0 = math.round(char_clamp(d0, minimum, maximum) * ratio) - min2
+			local y1 = math.round(char_clamp(d1, minimum, maximum) * ratio) - min2
+
+			if y0 == y1 then
+				result[rows - y0 + 1][x + offset] = "─"
+			else
+				result[rows - y1 + 1][x + offset] = y0 > y1 and symbols.bottomLeft or symbols.topLeft
+				result[rows - y0 + 1][x + offset] = y0 > y1 and symbols.topRight or symbols.bottomRight
+
+				local s = math.min(y0, y1) + 1
+				local e = math.max(y0, y1) - 1
+
+				for k=s, e, 1 do
+					result[rows - k + 1][x + offset] = "│"
+				end
+			end
+		end
+	end
+
+	local con = ""
+
+	for i = 1, #result do
+		con = con .. table.concat(result[i])
+		if i ~= #result then
+			con = con .. "\n"
+		end
+	end
+
+	return con
 end
 
 return asciitable

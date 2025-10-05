@@ -1,6 +1,6 @@
 # AsciiTable
 <img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/tree.png">
-
+<img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/chart.png">
 
 ## install
 ```
@@ -14,24 +14,19 @@ import
 local asciitable = require(path)
 ```
 
-table
-```luau
-print(asciitable.table(table))
-```
-
 tree
 ```luau
 print(asciitable.tree(string, table))
 ```
 
+chart
+```luau
+print(asciitable.chart({ number } | { { number } }))
+```
+
 round
 ```luau
 asciitable.round = true
-```
-
-merge_index_labels
-```luau
-asciitable.merge_index_labels = false
 ```
 
 ## using lib
