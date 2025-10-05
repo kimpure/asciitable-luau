@@ -21,7 +21,7 @@ print(asciitable.tree(string, table))
 
 plot
 ```luau
-print(asciitable.plot({ number } | { { number } }))
+print(asciitable.plot({ number }))
 ```
 
 round
