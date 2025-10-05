@@ -1,12 +1,5 @@
 local asciitable = require('../src/lib')
-
-asciitable.merge_index_labels = true
-
--- asciitable.round = true
-
-asciitable.table_main_index = 'main index'
-
-asciitable.table_main_value = 'main values'
+asciitable.round = true
 
 local test_table = {
     apple = 'apple',
