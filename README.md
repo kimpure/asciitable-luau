@@ -19,9 +19,9 @@ tree
 print(asciitable.tree(string, table))
 ```
 
-chart
+plot
 ```luau
-print(asciitable.chart({ number } | { { number } }))
+print(asciitable.plot({ number } | { { number } }))
 ```
 
 round
