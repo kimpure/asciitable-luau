@@ -2,5 +2,6 @@
     "languageMode": "strict",
     "lint": {
         "LocalShadow": false
-    }
+    },
+    "lintErrors": true
 }
