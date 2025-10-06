@@ -8,20 +8,18 @@ pesde add kimpure/asciitable
 ```
 
 ## using
-
-import
 ```luau
 local asciitable = require(path)
 ```
 
-tree
+tree [config](https://github.com/kimpure/asciitable-luau/blob/f6217f50075ecdb1af30c864c0c428b42a938574/src/lib.luau#L107)
 ```luau
-print(asciitable.tree(string, table))
+print(asciitable.tree(string, table, config))
 ```
 
-plot
+plot [config](https://github.com/kimpure/asciitable-luau/blob/f6217f50075ecdb1af30c864c0c428b42a938574/src/lib.luau#L225)
 ```luau
-print(asciitable.plot({ number }))
+print(asciitable.plot({ number }, config))
 ```
 
 round
@@ -29,6 +27,5 @@ round
 asciitable.round = true
 ```
 
-## using lib
+## dependencies
 [greentea](https://github.com/Corecii/GreenTea) <br>
-
