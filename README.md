@@ -1,6 +1,6 @@
 # AsciiTable
-<img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/tree.png">
-<img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/chart.png">
+<img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/normal.png">
+<img src="https://raw.githubusercontent.com/kimpure/asciitable-luau/refs/heads/master/image/round.png">
 
 ## install
 ```
