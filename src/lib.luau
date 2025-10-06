@@ -115,75 +115,9 @@ function asciitable.tree(top, children)
 
 		return result
 	end
-
-	local function is_array(arr: { [any]: any })
-		for k, v in arr do
-			if typeof(k) == "number" then
-				continue
-			end
-			return false
-		end
-		return true
-	end
-
-	local function table_to_string(tab: { [any]: any }): string
-		local function format_print_value(value: any)
-			local value_type = typeof(value)
-			if value_type == "string" then
-				return `'{value}'`
-			end
-			return tostring(value)
-		end
-
-		if typeof(tab) ~= "table" then
-			return tab
-		end
-
-		local res = "{ "
-		local rep = 0
-		local len = mixedtable_len(tab)
-
-		if is_array(tab) then
-			return "[Array]"
-		end
-
-		for k, v in tab do
-			rep += 1
-
-			local pt = len == rep and "" or ", "
-
-			if typeof(v) ~= "table" then
-				v = format_print_value(v)
-				if typeof(k) ~= "number" then
-					res ..= `[{format_print_value(k)}] = {v}{pt}`
-					continue
-				end
-				res ..= `{v}{pt}`
-				continue
-			end
-
-			if not is_array(v) then
-				res ..= `[{format_print_value(k)}] = {table_to_string(v)}{pt}`
-				continue
-			end
-
-			if typeof(k) ~= "number" then
-				res ..= `[{format_print_value(k)}] = [Array]{pt}`
-				continue
-			end
-
-			res ..= `[Array]{pt}`
-		end
-
-		return res .. " }"
-	end
-
+	
 	local function format_print_value(value: any): string
 		local value_type = typeof(value)
-
-		if value_type == "table" then
-			return table_to_string(value)
-		end
 
 		if value_type == "string" then
 			if string.find(value, "\n") then
