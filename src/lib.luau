@@ -11,6 +11,8 @@ local plotoption_type = gt.build(gt.optional(
 	gt.struct({
 		offset = gt.opt(gt.number()),
 		height = gt.opt(gt.number()),
+		gap = gt.opt(gt.number()),
+		xaxis = gt.opt(gt.boolean()),
 	})
 ))
 
@@ -87,11 +89,15 @@ export type ArsciiTable = {
 		print(asciitable.plot({ 1, 2, 3, 4 }))
 		```
 
+		```luau
+		print(asciitable.plot({ 1, 2, 3, 4 }, { height = 4, offset = 2 }))
+		```
+
 		@param series Number array to be drawn
-		@param cfg Draw options
+		@param config Draw options
 		@return string
 	]=]
-	plot: (series: { number }, opts: PlotConfig?) -> string,
+	plot: (series: { number }, cfg: PlotConfig?) -> string,
 }
 
 local asciitable = {} :: ArsciiTable
@@ -267,6 +273,9 @@ end
 type PlotConfig = {
 	offset: number?,
 	height: number?,
+	gap: number?,
+	
+	xaxis: boolean?,
 }
 
 function asciitable.plot(series, cfg)
@@ -287,8 +296,9 @@ function asciitable.plot(series, cfg)
 		return ""
 	end
 
-	local offset = cfg.offset or 3
+	local offset = cfg.offset or 1
 	local height = cfg.height or (maximum - minimum)
+	local gap = cfg.gap or 0
 
 	local ratio = (maximum - minimum) > 0 and height / (maximum - minimum) or 1
 
@@ -296,7 +306,7 @@ function asciitable.plot(series, cfg)
     local max2 = math.ceil(maximum * ratio)
     local rows = max2 - min2
 
-	local width = #series + offset
+	local width = #series * (gap + 1) + (offset + 1)
     local result = {}
 
     for i=1, rows + 1 do
@@ -306,23 +316,40 @@ function asciitable.plot(series, cfg)
         end
     end
 
+	local max_val_len = 8
+
 	for i=0, max2 - min2, 1 do
 		local val = maximum - (i * (maximum - minimum) / (rows ~= 0 and rows or 1))
-		result[i + 1][1] = string.format("%8.2f", val)
-        result[i + 1][offset] = symbols.rightMiddle
+		local label = string.format("%8.2f", val)
+
+		result[i + 1][1] = label
+        result[i + 1][offset + 1] = symbols.rightMiddle
+		
+		max_val_len = math.max(max_val_len, #label)
+	end
+
+	for i=0, max2 - min2, 1 do
+		local val = maximum - (i * (maximum - minimum) / (rows ~= 0 and rows or 1))
+		local label = string.format("%8.2f", val)
+
+		result[i + 1][1] = string.rep(" ", max_val_len - #label) .. label
 	end
 
 	for x=1, #series do
 		local d0 = series[x]
 		local d1 = series[x + 1]
-
+		
 		local y0 = math.round(math.clamp(d0, minimum, maximum) * ratio) - min2
         local y1 = d1 and math.round(math.clamp(d1, minimum, maximum) * ratio) - min2 or nil
 
 		local row0 = rows - y0 + 1
-		local col = x + offset
+		local col = x * (gap + 1) + (offset + 1)
 
 		result[row0][col] = symbols.middleMiddle
+
+		for i=1, gap do
+			result[row0][col - i] = symbols.middleMiddle
+		end
 
 		if not y1 then
 			continue
@@ -332,7 +359,7 @@ function asciitable.plot(series, cfg)
 		result[row1][col] = y0 > y1 and symbols.bottomLeft or symbols.topLeft
 		result[row0][col] = y0 > y1 and symbols.topRight or symbols.bottomRight
 
-		for i=math.min(row0, row1) + 1, math.max(row0, row1) - 1 do
+		for i=math.min(row0, row1) + 1, math.max(row0, row1) - 1, 1 do
 			result[i][col] = symbols.middle
 		end
 	end
@@ -341,6 +368,19 @@ function asciitable.plot(series, cfg)
 
 	for i=1, #result do
 		con ..= table.concat(result[i]) .. "\n"
+	end
+
+	con ..= string.rep(symbols.middleMiddle, max_val_len + offset - 1) 
+	con ..= symbols.bottomMiddle
+	con ..= string.rep(symbols.middleMiddle, #series * (gap + 1))
+
+	if cfg.xaxis then
+		con ..= "\n"
+		con ..= string.rep(" ", max_val_len + offset)
+		
+		for i=1, #series do
+			con ..= string.rep(" ", gap) .. i
+		end
 	end
 
 	return con
