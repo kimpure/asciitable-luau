@@ -50,8 +50,6 @@ local round_symbols = {
 
 --[=[
 	@class ArsciiTable
-
-    ArsciiTable
 ]=]
 export type ArsciiTable = {
 	--[=[
@@ -78,7 +76,7 @@ export type ArsciiTable = {
 		@param child Child to be included in tree
 		@return string
 	]=]
-	tree: (top: any, child: { [any]: any }) -> string,
+	tree: (top: any, child: { [any]: any }, cfg: TreeConfig?) -> string,
 
 	--[=[
 		@within ArsciiTable
@@ -103,7 +101,21 @@ export type ArsciiTable = {
 local asciitable = {} :: ArsciiTable
 asciitable.round = false
 
-function asciitable.tree(top, children)
+--[=[
+	@class TreeConfig
+]=]
+type TreeConfig = {
+	--[=[
+		@within TreeConfig
+
+		Whether to apply the custom formatter to node values
+
+		Default = true
+	]=]
+	format: boolean?,
+}
+
+function asciitable.tree(top, children, cfg)
 	assert(mixedtable_type(children))
 	
 	local function mixedtable_len(tab: { [any]: any })
@@ -134,7 +146,10 @@ function asciitable.tree(top, children)
 		return tostring(value)
 	end
 
+	local cfg: TreeConfig = cfg or {}
+	local use_format = cfg.format == nil and true or cfg.format 
 	local symbols = asciitable.round and round_symbols or normal_symbols
+	
 	local result = tostring(top) .. "\n"
 
 	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
@@ -194,7 +209,7 @@ function asciitable.tree(top, children)
 
 				table.remove(lt)
 			else
-				result ..= ": " .. format_print_value(v) .. "\n"
+				result ..= ": " .. (use_format and format_print_value(v) or v) .. "\n"
 			end
 		end
 	end
@@ -204,11 +219,36 @@ function asciitable.tree(top, children)
 	return result
 end
 
+--[=[
+	@class PlotConfig
+]=]
 type PlotConfig = {
+	--[=[
+		@within PlotConfig
+
+		Vertical offset (number of rows to shift downward)
+	]=]
 	offset: number?,
+
+	--[=[
+		@within PlotConfig
+
+		Height of the chart in rows
+	]=]
 	height: number?,
+
+	--[=[
+		@within PlotConfig
+
+		Horizontal gap between data points
+	]=]
 	gap: number?,
 	
+	--[=[
+		@within PlotConfig
+		
+		Whether to display the x-axis (true = show, false = hide)
+	]=]
 	xaxis: boolean?,
 }
 
