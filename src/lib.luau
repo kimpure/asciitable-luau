@@ -1,20 +1,14 @@
 local gt = require("../luau_packages/greentea_luau")
-local mixedtable_type = gt.build(
-	gt.table({
-		[gt.any()] = gt.any()
-	})
-)
-local numberarray_type = gt.build(
-	gt.array(gt.number())
-)
-local plotoption_type = gt.build(gt.optional(
-	gt.struct({
-		offset = gt.opt(gt.number()),
-		height = gt.opt(gt.number()),
-		gap = gt.opt(gt.number()),
-		xaxis = gt.opt(gt.boolean()),
-	})
-))
+local mixedtable_type = gt.build(gt.table({
+	[gt.any()] = gt.any(),
+}))
+local numberarray_type = gt.build(gt.array(gt.number()))
+local plotoption_type = gt.build(gt.optional(gt.struct({
+	offset = gt.opt(gt.number()),
+	height = gt.opt(gt.number()),
+	gap = gt.opt(gt.number()),
+	xaxis = gt.opt(gt.boolean()),
+})))
 
 local normal_symbols = {
 	middleMiddle = "─",
@@ -117,17 +111,17 @@ type TreeConfig = {
 
 function asciitable.tree(top, children, cfg)
 	assert(mixedtable_type(children))
-	
+
 	local function mixedtable_len(tab: { [any]: any })
 		local result = 0
-		
+
 		for k, v in tab do
 			result += 1
 		end
 
 		return result
 	end
-	
+
 	local function format_print_value(value: any): string
 		local value_type = typeof(value)
 
@@ -147,9 +141,9 @@ function asciitable.tree(top, children, cfg)
 	end
 
 	local cfg: TreeConfig = cfg or {}
-	local use_format = cfg.format == nil and true or cfg.format 
+	local use_format = cfg.format == nil and true or cfg.format
 	local symbols = asciitable.round and round_symbols or normal_symbols
-	
+
 	local result = tostring(top) .. "\n"
 
 	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
@@ -171,40 +165,40 @@ function asciitable.tree(top, children, cfg)
 			end
 			return tostring(a) < tostring(b)
 		end)
-		
-		for i=1, #key_hashmap do
+
+		for i = 1, #key_hashmap do
 			local k = key_hashmap[i]
 			local v = value[k]
 
 			local is_last = mixedtable_len(value) == i
 
-			for i=1, #lt do
+			for i = 1, #lt do
 				if lt[i] then
 					result ..= " "
 				else
 					result ..= symbols.middle
 				end
 			end
-			
+
 			if is_last then
 				result ..= symbols.bottomLeft
 			else
 				result ..= symbols.leftMiddle
 			end
-	
+
 			if typeof(v) == "table" and mixedtable_len(v) ~= 0 then
 				result ..= symbols.topMiddle
 			else
 				result ..= symbols.middleMiddle
 			end
-	
+
 			result ..= " " .. tostring(k)
-	
+
 			if typeof(v) == "table" then
 				result ..= "\n"
-				
+
 				table.insert(lt, is_last)
-				
+
 				make_table_tree(tab_size + 1, v, lt)
 
 				table.remove(lt)
@@ -213,7 +207,7 @@ function asciitable.tree(top, children, cfg)
 			end
 		end
 	end
-	
+
 	make_table_tree(0, children, {})
 
 	return result
@@ -243,7 +237,7 @@ type PlotConfig = {
 		Horizontal gap between data points
 	]=]
 	gap: number?,
-	
+
 	--[=[
 		@within PlotConfig
 		
@@ -260,11 +254,11 @@ function asciitable.plot(series, cfg)
 	local symbols = asciitable.round and round_symbols or normal_symbols
 
 	local minimum, maximum = math.huge, -math.huge
-    
+
 	for i = 1, #series do
-        minimum = math.min(minimum, series[i])
-        maximum = math.max(maximum, series[i])
-    end
+		minimum = math.min(minimum, series[i])
+		maximum = math.max(maximum, series[i])
+	end
 
 	if minimum > maximum then
 		return ""
@@ -276,52 +270,52 @@ function asciitable.plot(series, cfg)
 
 	local ratio = (maximum - minimum) > 0 and height / (maximum - minimum) or 1
 
-    local min2 = math.floor(minimum * ratio)
-    local max2 = math.ceil(maximum * ratio)
-    local rows = max2 - min2
+	local min2 = math.floor(minimum * ratio)
+	local max2 = math.ceil(maximum * ratio)
+	local rows = max2 - min2
 
 	local width = #series * (gap + 1) + (offset + 1)
-    local result = {}
+	local result = {}
 
-    for i=1, rows + 1 do
-        result[i] = {}
-        for j=1, width do
-            result[i][j] = " "
-        end
-    end
+	for i = 1, rows + 1 do
+		result[i] = {}
+		for j = 1, width do
+			result[i][j] = " "
+		end
+	end
 
 	local max_val_len = 8
 
-	for i=0, max2 - min2, 1 do
+	for i = 0, max2 - min2, 1 do
 		local val = maximum - (i * (maximum - minimum) / (rows ~= 0 and rows or 1))
 		local label = string.format("%8.2f", val)
 
 		result[i + 1][1] = label
-        result[i + 1][offset + 1] = symbols.rightMiddle
-		
+		result[i + 1][offset + 1] = symbols.rightMiddle
+
 		max_val_len = math.max(max_val_len, #label)
 	end
 
-	for i=0, max2 - min2, 1 do
+	for i = 0, max2 - min2, 1 do
 		local val = maximum - (i * (maximum - minimum) / (rows ~= 0 and rows or 1))
 		local label = string.format("%8.2f", val)
 
 		result[i + 1][1] = string.rep(" ", max_val_len - #label) .. label
 	end
 
-	for x=1, #series do
+	for x = 1, #series do
 		local d0 = series[x]
 		local d1 = series[x + 1]
-		
+
 		local y0 = math.round(math.clamp(d0, minimum, maximum) * ratio) - min2
-        local y1 = d1 and math.round(math.clamp(d1, minimum, maximum) * ratio) - min2 or nil
+		local y1 = d1 and math.round(math.clamp(d1, minimum, maximum) * ratio) - min2 or nil
 
 		local row0 = rows - y0 + 1
 		local col = x * (gap + 1) + (offset + 1)
 
 		result[row0][col] = symbols.middleMiddle
 
-		for i=1, gap do
+		for i = 1, gap do
 			result[row0][col - i] = symbols.middleMiddle
 		end
 
@@ -333,26 +327,26 @@ function asciitable.plot(series, cfg)
 		result[row1][col] = y0 > y1 and symbols.bottomLeft or symbols.topLeft
 		result[row0][col] = y0 > y1 and symbols.topRight or symbols.bottomRight
 
-		for i=math.min(row0, row1) + 1, math.max(row0, row1) - 1, 1 do
+		for i = math.min(row0, row1) + 1, math.max(row0, row1) - 1, 1 do
 			result[i][col] = symbols.middle
 		end
 	end
 
 	local con = ""
 
-	for i=1, #result do
+	for i = 1, #result do
 		con ..= table.concat(result[i]) .. "\n"
 	end
 
-	con ..= string.rep(symbols.middleMiddle, max_val_len + offset - 1) 
+	con ..= string.rep(symbols.middleMiddle, max_val_len + offset - 1)
 	con ..= symbols.bottomMiddle
 	con ..= string.rep(symbols.middleMiddle, #series * (gap + 1))
 
 	if cfg.xaxis then
 		con ..= "\n"
 		con ..= string.rep(" ", max_val_len + offset)
-		
-		for i=1, #series do
+
+		for i = 1, #series do
 			con ..= string.rep(" ", gap) .. i
 		end
 	end
