@@ -17,9 +17,6 @@ default = "https://github.com/pesde-pkg/index"
 [engines]
 pesde = "^0.7.1"
 
-[dependencies]
-greentea_luau = { name = "jiwonz/greentea_luau", version = "^0.2.0", target = "luau" }
-
 [dev_dependencies]
 darklua = { name = "pesde/darklua", version = "^0.17.1", target = "lune" }
 multitarget = { name = "jiwonz/multitarget", version = "^0.4.0-rc.30", target = "lune" }

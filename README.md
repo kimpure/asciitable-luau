@@ -27,5 +27,3 @@ round
 asciitable.round = true
 ```
 
-## dependencies
-[greentea](https://github.com/Corecii/GreenTea) <br>

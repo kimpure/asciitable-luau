@@ -1,5 +1,14 @@
 local asciitable = require('../src/lib')
-asciitable.round = true
 
-print(asciitable.tree('tree', { adir = { "bfile", "cfile" }, bdir = { "cfile", "dfile" } }, { format = true }))
-print(asciitable.plot({ 0, 10, 20, 30, 40, 30, 20, 10, 0 }, { height = 4, offset = 2, gap = 2, xaxis = true }))
+local sinf = {}
+
+for x=1, 360, 10 do
+    table.insert(sinf, math.sin(math.rad(x)))
+end
+
+print(asciitable.plot(sinf, {
+    height = 36,
+    gap = 1,
+    xaxis = true,
+}))
+

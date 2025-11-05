@@ -1,15 +1,3 @@
-local gt = require("../luau_packages/greentea_luau")
-local mixedtable_type = gt.build(gt.table({
-	[gt.any()] = gt.any(),
-}))
-local numberarray_type = gt.build(gt.array(gt.number()))
-local plotoption_type = gt.build(gt.optional(gt.struct({
-	offset = gt.opt(gt.number()),
-	height = gt.opt(gt.number()),
-	gap = gt.opt(gt.number()),
-	xaxis = gt.opt(gt.boolean()),
-})))
-
 local normal_symbols = {
 	middleMiddle = "─",
 	rowMiddle = "┼",
@@ -110,7 +98,7 @@ type TreeConfig = {
 }
 
 function asciitable.tree(top, children, cfg)
-	assert(mixedtable_type(children))
+	assert(typeof(children) == "table", `invalid argument #2 to 'tree' (table expected, got {typeof(children)})`)
 
 	local function mixedtable_len(tab: { [any]: any })
 		local result = 0
@@ -247,8 +235,8 @@ type PlotConfig = {
 }
 
 function asciitable.plot(series, cfg)
-	assert(numberarray_type(series))
-	assert(plotoption_type(cfg))
+	assert(typeof(series) == "table", `invalid argument #1 to 'plot' (table expected, got {typeof(series)})`)
+	assert(cfg == nil or typeof(cfg) == "table", `invalid argument #2 to 'plot' (table expected, got {typeof(cfg)})`)
 
 	local cfg: PlotConfig = cfg or {}
 	local symbols = asciitable.round and round_symbols or normal_symbols
