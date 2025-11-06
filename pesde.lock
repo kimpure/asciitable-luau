@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 format = 2
 name = "kimpure/asciitable"
-version = "0.3.5"
+version = "0.3.6"
 target = "luau"
 
 [graph."0x5eal/unzip@0.2.0 luau".pkg_ref]
@@ -81,9 +81,6 @@ index_url = "https://github.com/pesde-pkg/index"
 [graph."jiwonz/glob@0.1.2 lune".pkg_ref.dependencies]
 globrex_lune = [{ name = "kimpure/globrex_lune", version = "^0.2.4", index = "https://github.com/pesde-pkg/index" }, "standard"]
 pathfs = [{ name = "jiwonz/pathfs", version = "^0.6.0-rc.3", index = "https://github.com/pesde-pkg/index" }, "standard"]
-
-[graph."jiwonz/greentea_luau@0.2.0 luau"]
-direct = ["greentea_luau", { name = "jiwonz/greentea_luau", version = "^0.2.0", index = "default", target = "luau" }, "standard"]
 
 [graph."jiwonz/greentea_luau@0.2.0 luau".pkg_ref]
 ref_ty = "pesde"
@@ -177,35 +174,35 @@ index_url = "https://github.com/pesde-pkg/index"
 ref_ty = "pesde"
 index_url = "https://github.com/pesde-pkg/index"
 
-[graph."pesde/darklua@0.17.1+toolchainlib.1 lune"]
+[graph."pesde/darklua@0.17.2 lune"]
 direct = ["darklua", { name = "pesde/darklua", version = "^0.17.1", index = "default", target = "lune" }, "dev"]
 
-[graph."pesde/darklua@0.17.1+toolchainlib.1 lune".dependencies]
+[graph."pesde/darklua@0.17.2 lune".dependencies]
 option = ["lukadev_0/option@1.2.1 lune", "standard"]
 result = ["lukadev_0/result@1.2.1 lune", "standard"]
-toolchainlib = ["pesde/toolchainlib@0.2.0 lune", "standard"]
+toolchainlib = ["pesde/toolchainlib@0.2.1 lune", "standard"]
 
-[graph."pesde/darklua@0.17.1+toolchainlib.1 lune".pkg_ref]
+[graph."pesde/darklua@0.17.2 lune".pkg_ref]
 ref_ty = "pesde"
 index_url = "https://github.com/pesde-pkg/index"
 
-[graph."pesde/darklua@0.17.1+toolchainlib.1 lune".pkg_ref.dependencies]
+[graph."pesde/darklua@0.17.2 lune".pkg_ref.dependencies]
 option = [{ name = "lukadev_0/option", version = "^1.2.1", index = "https://github.com/pesde-pkg/index" }, "standard"]
 result = [{ name = "lukadev_0/result", version = "^1.2.1", index = "https://github.com/pesde-pkg/index" }, "standard"]
 toolchainlib = [{ name = "pesde/toolchainlib", version = "^0.2.0", index = "https://github.com/pesde-pkg/index", target = "lune" }, "standard"]
 
-[graph."pesde/toolchainlib@0.2.0 lune".dependencies]
+[graph."pesde/toolchainlib@0.2.1 lune".dependencies]
 dirs = ["jiwonz/dirs@0.6.0 lune", "standard"]
 option = ["lukadev_0/option@1.2.1 lune", "peer"]
 pathfs = ["jiwonz/pathfs@0.6.0 lune", "standard"]
 result = ["lukadev_0/result@1.2.1 lune", "peer"]
 unzip = ["0x5eal/unzip@0.2.0 luau", "standard"]
 
-[graph."pesde/toolchainlib@0.2.0 lune".pkg_ref]
+[graph."pesde/toolchainlib@0.2.1 lune".pkg_ref]
 ref_ty = "pesde"
 index_url = "https://github.com/pesde-pkg/index"
 
-[graph."pesde/toolchainlib@0.2.0 lune".pkg_ref.dependencies]
+[graph."pesde/toolchainlib@0.2.1 lune".pkg_ref.dependencies]
 dirs = [{ name = "jiwonz/dirs", version = "^0.6.0", index = "https://github.com/pesde-pkg/index" }, "standard"]
 option = [{ name = "lukadev_0/option", version = "^1.2.1", index = "https://github.com/pesde-pkg/index" }, "peer"]
 pathfs = [{ name = "jiwonz/pathfs", version = "^0.6.0", index = "https://github.com/pesde-pkg/index" }, "standard"]
