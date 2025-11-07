@@ -10,5 +10,6 @@ print(asciitable.plot(sinf, {
     height = 36,
     gap = 1,
     xaxis = true,
+    round = true,
 }))
 

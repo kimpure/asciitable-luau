@@ -80,7 +80,16 @@ export type ArsciiTable = {
 	plot: (series: { number }, cfg: PlotConfig?) -> string,
 }
 
+--[=[
+    @class AsciiTable
+]=]
 local asciitable = {} :: ArsciiTable
+
+--[=[
+    @within AsciiTable
+
+    Use round results
+]=]
 asciitable.round = false
 
 --[=[
@@ -95,6 +104,13 @@ type TreeConfig = {
 		Default = true
 	]=]
 	format: boolean?,
+
+    --[=[
+        @within PlotConfig
+
+        Use round results
+    ]=]
+    round: boolean?,
 }
 
 function asciitable.tree(top, children, cfg)
@@ -130,9 +146,9 @@ function asciitable.tree(top, children, cfg)
 
 	local cfg: TreeConfig = cfg or {}
 	local use_format = cfg.format == nil and true or cfg.format
-	local symbols = asciitable.round and round_symbols or normal_symbols
-
-	local result = tostring(top) .. "\n"
+	local symbols = (asciitable.round or cfg.round) and round_symbols or normal_symbols
+	
+    local result = tostring(top) .. "\n"
 
 	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
 		local key_hashmap = {}
@@ -232,6 +248,13 @@ type PlotConfig = {
 		Whether to display the x-axis (true = show, false = hide)
 	]=]
 	xaxis: boolean?,
+
+    --[=[
+        @within PlotConfig
+
+        Use round results
+    ]=]
+    round: boolean?,
 }
 
 function asciitable.plot(series, cfg)
@@ -239,7 +262,7 @@ function asciitable.plot(series, cfg)
 	assert(cfg == nil or typeof(cfg) == "table", `invalid argument #2 to 'plot' (table expected, got {typeof(cfg)})`)
 
 	local cfg: PlotConfig = cfg or {}
-	local symbols = asciitable.round and round_symbols or normal_symbols
+	local symbols = (asciitable.round or cfg.round) and round_symbols or normal_symbols
 
 	local minimum, maximum = math.huge, -math.huge
 
