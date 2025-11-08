@@ -105,12 +105,12 @@ type TreeConfig = {
 	]=]
 	format: boolean?,
 
-    --[=[
+	--[=[
         @within PlotConfig
 
         Use round results
     ]=]
-    round: boolean?,
+	round: boolean?,
 }
 
 function asciitable.tree(top, children, cfg)
@@ -147,8 +147,8 @@ function asciitable.tree(top, children, cfg)
 	local cfg: TreeConfig = cfg or {}
 	local use_format = cfg.format == nil and true or cfg.format
 	local symbols = (asciitable.round or cfg.round) and round_symbols or normal_symbols
-	
-    local result = tostring(top) .. "\n"
+
+	local result = tostring(top) .. "\n"
 
 	local function make_table_tree(tab_size: number, value: { [any]: any }, lt: { boolean })
 		local key_hashmap = {}
@@ -249,12 +249,12 @@ type PlotConfig = {
 	]=]
 	xaxis: boolean?,
 
-    --[=[
+	--[=[
         @within PlotConfig
 
         Use round results
     ]=]
-    round: boolean?,
+	round: boolean?,
 }
 
 function asciitable.plot(series, cfg)
