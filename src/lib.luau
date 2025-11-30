@@ -31,11 +31,11 @@ local round_symbols = {
 }
 
 --[=[
-	@class ArsciiTable
+	@class AsciiTable
 ]=]
 export type ArsciiTable = {
 	--[=[
-		@within ArsciiTable
+		@within AsciiTable
 
 		Whether to use round
 
@@ -46,7 +46,7 @@ export type ArsciiTable = {
 	round: boolean,
 
 	--[=[
-		@within ArsciiTable
+		@within AsciiTable
 		
 		Draw a tree
 		
@@ -61,7 +61,7 @@ export type ArsciiTable = {
 	tree: (top: any, child: { [any]: any }, cfg: TreeConfig?) -> string,
 
 	--[=[
-		@within ArsciiTable
+		@within AsciiTable
 		
 		Draw a chart
 		
@@ -78,6 +78,20 @@ export type ArsciiTable = {
 		@return string
 	]=]
 	plot: (series: { number }, cfg: PlotConfig?) -> string,
+
+	--[=[
+        @within AsciiTable
+
+        To string a table
+
+        ```luau
+        print(asciitable.tostring({ a = true, b = false }))
+        ```
+
+        @parms tab Target table
+        @return string
+    ]=]
+	tostring: (tab: { [any]: any }, cfg: ToStringConfig?) -> string,
 }
 
 --[=[
@@ -363,6 +377,40 @@ function asciitable.plot(series, cfg)
 	end
 
 	return con
+end
+
+--[=[
+	@class ToStringConfig
+]=]
+type ToStringConfig = {
+	tab_size: number?,
+    format: string?
+}
+
+function asciitable.tostring(tab, config)
+	local config: ToStringConfig = config or {}
+    local format_str = config.format or "[%s]: %s"
+	local tab_size = config.tab_size or 4
+
+	local format = string.format
+	local gsub = string.gsub
+	local rep = string.rep
+
+	local result = ""
+	for k, v in pairs(tab) do
+		result ..= format(
+			rep(" ", tab_size) .. format_str,
+			type(k) == "table" and (tab[1] and "array" or "table")
+				or (type(k) == "string" and format('"%s"', k) or tostring(k)),
+			gsub(
+				typeof(v) == "table" and asciitable.tostring(v) or tostring(v),
+				"\n([^\n]+)",
+				"\n" .. rep(" ", tab_size) .. "%1"
+			)
+		) .. "\n"
+	end
+
+	return "{\n" .. result .. "}"
 end
 
 return asciitable

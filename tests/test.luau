@@ -13,3 +13,5 @@ print(asciitable.plot(sinf, {
     round = true,
 }))
 
+print(asciitable.tostring(sinf))
+
