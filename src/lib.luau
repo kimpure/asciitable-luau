@@ -403,7 +403,7 @@ function asciitable.tostring(tab, config)
 			type(k) == "table" and (tab[1] and "array" or "table")
 				or (type(k) == "string" and format('"%s"', k) or tostring(k)),
 			gsub(
-				typeof(v) == "table" and asciitable.tostring(v) or tostring(v),
+				typeof(v) == "table" and asciitable.tostring(v, config) or tostring(v),
 				"\n([^\n]+)",
 				"\n" .. rep(" ", tab_size) .. "%1"
 			)
